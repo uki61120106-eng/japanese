@@ -19,6 +19,17 @@ npm run dev     # http://localhost:3000
 
 本番ビルドは `npm run build` → `npm run start`。
 
+## 共有用の1枚 HTML
+
+リンクを渡して触ってもらいたいときは、アプリ全体を単一の HTML に束ねられます。
+
+```bash
+npm run build:demo      # dist-demo/index.html
+```
+
+表示に使う文字のフォントだけを埋め込むので、生成後はネット接続なしで動きます
+（生成時のみ Google Fonts への通信が必要。取得できない場合は CDN 参照に切り替わります）。
+
 ## 構成
 
 | パス | 役割 |
@@ -32,10 +43,16 @@ npm run dev     # http://localhost:3000
 | `src/lib/study.ts` | デッキの生成、シャッフル、集計 |
 | `src/lib/row-theme.ts` | 行ごとの配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
+| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
 
 ## 技術
 
 Next.js (App Router) / TypeScript / Tailwind CSS v4 / shadcn/ui
+
+フォント（M PLUS Rounded 1c）は Google Fonts から読み込みます。next/font で
+self-host すると、日本語が unicode-range で 500 個以上の woff2 に分割されて
+ビルド成果物に入ってしまうためです。読み込めない環境では、端末内蔵の
+丸ゴシック系フォントにフォールバックします。
 
 > shadcn/ui のコンポーネントは `src/components/ui/` に取り込み済みです。
 > 追加する場合は `npx shadcn@latest add <component>` を実行してください

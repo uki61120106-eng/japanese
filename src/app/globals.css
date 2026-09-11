@@ -3,6 +3,12 @@
 
 :root {
   color-scheme: light;
+
+  /* 端末に無い場合に備えて丸ゴシック系のフォールバックを並べる */
+  --font-app-sans:
+    "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+
   --radius: 1rem;
 
   --background: oklch(0.99 0.008 95);
