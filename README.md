@@ -30,6 +30,16 @@ npm run build:demo      # dist-demo/index.html
 表示に使う文字のフォントだけを埋め込むので、生成後はネット接続なしで動きます
 （生成時のみ Google Fonts への通信が必要。取得できない場合は CDN 参照に切り替わります）。
 
+## Vercel へのデプロイ
+
+環境変数もビルド設定も不要です。
+
+1. [vercel.com/new](https://vercel.com/new) を開き、このリポジトリを Import する
+2. Framework Preset が **Next.js** になっていることを確認する（自動検出されます）
+3. Deploy を押す
+
+Production は `main`、それ以外のブランチへの push は自動でプレビュー URL が作られます。
+
 ## 構成
 
 | パス | 役割 |
