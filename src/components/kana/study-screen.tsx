@@ -5,7 +5,7 @@ import { Check, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { FlashCard } from "@/components/flash-card"
+import { FlashCard } from "@/components/kana/flash-card"
 import type { Kana } from "@/lib/kana"
 import { ROW_THEME } from "@/lib/row-theme"
 import type { Answer } from "@/lib/study"

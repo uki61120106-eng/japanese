@@ -1,15 +1,11 @@
-import type { Metadata, Viewport } from "next"
+import type { Metadata } from "next"
 
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "かなフラッシュ | ひらがな・カタカナを覚えるフラッシュカード",
+  title: "学習デモアプリ",
   description:
-    "ひらがな46字・カタカナ46字をカードをめくって覚える学習デモアプリ。通信なしでブラウザだけで動きます。",
-}
-
-export const viewport: Viewport = {
-  themeColor: "#fb7185",
+    "ブラウザだけで動く学習デモアプリ。かなフラッシュ（ひらがな・カタカナ）と えいかいわフラッシュ（初心者向けの英会話フレーズ）。",
 }
 
 export default function RootLayout({
@@ -39,9 +35,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"
         />
       </head>
-      <body className="min-h-dvh bg-linear-to-b from-rose-50 via-amber-50 to-sky-50 antialiased dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   )
 }
