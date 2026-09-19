@@ -46,6 +46,8 @@ const bundle = await esbuild.build({
   jsx: "automatic",
   tsconfig: join(root, "tsconfig.json"),
   define: { "process.env.NODE_ENV": '"production"' },
+  // Next.js のルーターがないので、next/link はハッシュリンクに差し替える
+  alias: { "next/link": join(root, "scripts/demo-link.tsx") },
   write: false,
 })
 
@@ -80,7 +82,7 @@ const fontHead = fontFaces
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">`
 
-const html = `<title>かなフラッシュ</title>
+const html = `<title>かなフラッシュ / ドロップクエスト</title>
 ${fontHead}
 <style>${css}</style>
 <div id="root" class="min-h-dvh bg-linear-to-b from-rose-50 via-amber-50 to-sky-50 antialiased dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"></div>

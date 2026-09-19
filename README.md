@@ -36,15 +36,20 @@ npm test        # 盤面判定とダメージ計算のテスト
 
 ## 共有用の1枚 HTML
 
-かなフラッシュをリンクで渡して触ってもらいたいときは、アプリ全体を単一の HTML に束ねられます。
+ファイルを渡して触ってもらいたいときは、両方のアプリを単一の HTML に束ねられます。
 
 ```bash
-npm run build:demo      # dist-demo/index.html
+npm run build:demo                      # dist-demo/index.html
+npm run build:demo -- dist-demo/a.html  # 出力先を変えるとき
 ```
 
 表示に使う文字のフォントだけを埋め込むので、生成後はネット接続なしで動きます
 （生成時のみ Google Fonts への通信が必要。取得できない場合は CDN 参照に切り替わります）。
-束ねる対象はかなフラッシュのみで、ドロップクエストは含まれません。
+
+Next.js のルーティングは使えないので、画面はハッシュで切り替えます
+（`#` がかなフラッシュ、`#puzzle` がドロップクエスト）。ファイルを直接開いた
+（`file://`）状態でも進行状況は保存されますが、ブラウザの設定によっては
+保存できないことがあります。
 
 ## Vercel へのデプロイ
 
@@ -98,6 +103,8 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `tests/puzzle/` | 盤面判定・ダメージ計算・育成・保存のテスト |
 | `scripts/run-tests.mjs` | テストの実行（esbuild で束ねて `node --test`） |
 | `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
+| `scripts/demo-entry.tsx` | 1枚 HTML の入り口（ハッシュで画面を切り替える） |
+| `scripts/demo-link.tsx` | 1枚 HTML での `next/link` の代わり |
 
 ## 技術
 
