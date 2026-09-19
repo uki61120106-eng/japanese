@@ -1,6 +1,7 @@
 "use client"
 
-import { Play, Shuffle, Sparkles } from "lucide-react"
+import Link from "next/link"
+import { Gamepad2, Play, Shuffle, Sparkles } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -151,6 +152,14 @@ export function HomeScreen({
           {total === 0 ? "行をひとつ以上えらんでください" : `ぜんぶで ${total} まい`}
         </p>
       </div>
+
+      <Link
+        href="/puzzle"
+        className="bg-card hover:border-foreground/20 flex items-center justify-center gap-2 rounded-2xl border-2 px-4 py-3 text-sm font-medium transition"
+      >
+        <Gamepad2 className="size-4 text-violet-500" />
+        パズルRPG「ドロップクエスト」であそぶ
+      </Link>
     </div>
   )
 }
