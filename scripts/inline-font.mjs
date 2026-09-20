@@ -7,8 +7,11 @@
  */
 import { execFileSync } from "node:child_process"
 
-const FONT_CSS_URL =
+export const MPLUS_ROUNDED_CSS_URL =
   "https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"
+
+export const NOTO_SANS_KR_CSS_URL =
+  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
 
 // woff2 を返してもらうために、対応ブラウザとして問い合わせる
 const UA =
@@ -46,33 +49,36 @@ function covers(ranges, codePoints) {
 
 /**
  * text に出てくる文字を表示するのに必要な @font-face だけを返す。
- * 取得に失敗した場合は null を返し、呼び出し側で CDN 参照に切り替える。
+ * 複数のファミリー（日本語＋ハングルなど）をまとめて渡せる。
+ * ひとつでも取得に失敗した場合は null を返し、呼び出し側で CDN 参照に切り替える。
  */
-export function inlineFontFaces(text) {
+export function inlineFontFaces(text, cssUrls = [MPLUS_ROUNDED_CSS_URL]) {
   const codePoints = [...new Set([...text].map((char) => char.codePointAt(0)))]
-
-  let css
-  try {
-    css = fetchText(FONT_CSS_URL)
-  } catch {
-    return null
-  }
-
-  const blocks = css.match(/@font-face\s*\{[^}]*\}/g) ?? []
   const kept = []
 
-  for (const block of blocks) {
-    const range = block.match(/unicode-range:\s*([^;]+);/)
-    const url = block.match(/url\((https:[^)]+\.woff2)\)/)
-    if (!range || !url) continue
-    if (!covers(parseRanges(range[1]), codePoints)) continue
+  for (const cssUrl of cssUrls) {
+    let css
+    try {
+      css = fetchText(cssUrl)
+    } catch {
+      return null
+    }
 
-    kept.push(
-      block.replace(
-        url[0],
-        `url(data:font/woff2;base64,${fetchBase64(url[1])})`
+    const blocks = css.match(/@font-face\s*\{[^}]*\}/g) ?? []
+
+    for (const block of blocks) {
+      const range = block.match(/unicode-range:\s*([^;]+);/)
+      const url = block.match(/url\((https:[^)]+\.woff2)\)/)
+      if (!range || !url) continue
+      if (!covers(parseRanges(range[1]), codePoints)) continue
+
+      kept.push(
+        block.replace(
+          url[0],
+          `url(data:font/woff2;base64,${fetchBase64(url[1])})`
+        )
       )
-    )
+    }
   }
 
   return kept.length > 0 ? kept.join("") : null

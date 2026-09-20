@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:demo": "node scripts/build-demo.mjs"
+    "build:demo": "node scripts/build-demo.mjs",
+    "build:demo:korean": "node scripts/build-demo.mjs korean"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.15",

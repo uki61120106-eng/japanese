@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next"
+import Link from "next/link"
 
 import "./globals.css"
 
@@ -40,6 +41,21 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-dvh bg-linear-to-b from-rose-50 via-amber-50 to-sky-50 antialiased dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        {/* ふたつの学習アプリを行き来するための切り替え */}
+        <nav className="mx-auto flex w-full max-w-lg items-center justify-center gap-2 px-4 pt-4">
+          <Link
+            href="/"
+            className="bg-card/70 hover:bg-card rounded-full border px-4 py-1.5 text-sm font-medium shadow-sm transition-colors"
+          >
+            かなフラッシュ
+          </Link>
+          <Link
+            href="/korean"
+            className="bg-card/70 hover:bg-card rounded-full border px-4 py-1.5 text-sm font-medium shadow-sm transition-colors"
+          >
+            ハングルフラッシュ
+          </Link>
+        </nav>
         {children}
       </body>
     </html>

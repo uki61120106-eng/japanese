@@ -28,9 +28,10 @@ export function countKnown(answers: Record<string, Answer>): number {
   return Object.values(answers).filter((a) => a === "known").length
 }
 
-export function wrongCards(
-  deck: Kana[],
+/** かな・韓国語どちらのカードでも使えるように id だけを要求する */
+export function wrongCards<T extends { id: string }>(
+  deck: T[],
   answers: Record<string, Answer>
-): Kana[] {
-  return deck.filter((kana) => answers[kana.id] === "unknown")
+): T[] {
+  return deck.filter((card) => answers[card.id] === "unknown")
 }

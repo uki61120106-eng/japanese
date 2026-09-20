@@ -9,6 +9,11 @@
     "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN",
     "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
 
+  /* ハングルは M PLUS Rounded 1c に字形が無いため、別のフォントを並べる */
+  --font-app-hangul:
+    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic",
+    var(--font-app-sans);
+
   --radius: 1rem;
 
   --background: oklch(0.99 0.008 95);
@@ -76,6 +81,7 @@
   --color-ring: var(--ring);
 
   --font-sans: var(--font-app-sans);
+  --font-hangul: var(--font-app-hangul);
 
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 3px);
