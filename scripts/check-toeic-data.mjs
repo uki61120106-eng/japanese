@@ -28,8 +28,16 @@ await esbuild.build({
   tsconfig: join(root, "tsconfig.json"),
 })
 
-const { BLANK, PART5_CATEGORIES, PART5_QUESTIONS, PART7_PASSAGES } =
-  await import(bundlePath)
+const {
+  BLANK,
+  PART5_CATEGORIES,
+  PART5_QUESTIONS,
+  PART5_ADVANCED,
+  PART7_SETS,
+  PART7_ADVANCED,
+  PHRASE_CATEGORIES,
+  PHRASE_CARDS,
+} = await import(bundlePath)
 
 const problems = []
 const fail = (where, message) => problems.push(`${where}: ${message}`)
@@ -50,19 +58,33 @@ function checkChoices(where, choices, answer) {
   }
 }
 
+const LEVELS = new Set(["core", "advanced"])
+const seenIds = new Set()
+
+function checkId(where, id) {
+  if (typeof id !== "string" || !id.trim()) {
+    fail(where, "id が空")
+    return
+  }
+  // 学習ログは id をキーにするので、コンテンツ全体で重複してはいけない
+  if (seenIds.has(id)) fail(where, "id が全体で重複している")
+  seenIds.add(id)
+}
+
 // ---- Part 5 ----------------------------------------------------------
 const categoryIds = new Set(PART5_CATEGORIES.map((category) => category.id))
-const seenPart5 = new Set()
-const answerByCategory = new Map()
+const part5 = [...PART5_QUESTIONS, ...PART5_ADVANCED]
+const answerByGroup = new Map()
 
-for (const question of PART5_QUESTIONS) {
+for (const question of part5) {
   const where = `Part5 ${question.id}`
-
-  if (seenPart5.has(question.id)) fail(where, "id が重複している")
-  seenPart5.add(question.id)
+  checkId(where, question.id)
 
   if (!categoryIds.has(question.category)) {
     fail(where, `未定義のカテゴリ（${question.category}）`)
+  }
+  if (!LEVELS.has(question.level)) {
+    fail(where, `未定義の難易度（${question.level}）`)
   }
 
   const blanks = question.sentence.split(BLANK).length - 1
@@ -73,54 +95,108 @@ for (const question of PART5_QUESTIONS) {
   if (!question.explanation.trim()) fail(where, "解説が空")
   if (!question.translation.trim()) fail(where, "和訳が空")
 
-  const counts = answerByCategory.get(question.category) ?? [0, 0, 0, 0]
+  const key = `${question.level}/${question.category}`
+  const counts = answerByGroup.get(key) ?? [0, 0, 0, 0]
   counts[question.answer] += 1
-  answerByCategory.set(question.category, counts)
+  answerByGroup.set(key, counts)
 }
 
 for (const id of categoryIds) {
-  if (!answerByCategory.has(id)) fail(`カテゴリ ${id}`, "問題が1問もない")
+  if (!answerByGroup.has(`core/${id}`)) fail(`カテゴリ ${id}`, "基礎の問題がない")
 }
 
 // ---- Part 7 ----------------------------------------------------------
-const seenPassages = new Set()
-const seenPart7 = new Set()
+const part7 = [...PART7_SETS, ...PART7_ADVANCED]
+const part7Answers = [0, 0, 0, 0]
 let part7QuestionCount = 0
+let multiDocumentSets = 0
 
-for (const passage of PART7_PASSAGES) {
-  const where = `Part7 ${passage.id}`
+for (const set of part7) {
+  const where = `Part7 ${set.id}`
+  checkId(where, set.id)
 
-  if (seenPassages.has(passage.id)) fail(where, "文書 id が重複している")
-  seenPassages.add(passage.id)
+  if (!LEVELS.has(set.level)) fail(where, `未定義の難易度（${set.level}）`)
+  if (!Array.isArray(set.documents) || set.documents.length === 0) {
+    fail(where, "文書が1通もない")
+    continue
+  }
+  if (set.documents.length > 1) multiDocumentSets += 1
 
-  if (!passage.body.trim()) fail(where, "本文が空")
-  if (!passage.translation.trim()) fail(where, "本文の和訳が空")
-  if (passage.questions.length < 2 || passage.questions.length > 5) {
-    fail(where, `設問数が ${passage.questions.length}（2〜5問であること）`)
+  for (const [index, document] of set.documents.entries()) {
+    const dWhere = `${where} / 文書${index + 1}`
+    if (!document.title.trim()) fail(dWhere, "見出しが空")
+    if (!document.body.trim()) fail(dWhere, "本文が空")
+    if (!document.translation.trim()) fail(dWhere, "本文の和訳が空")
   }
 
-  for (const question of passage.questions) {
+  if (set.questions.length < 2 || set.questions.length > 5) {
+    fail(where, `設問数が ${set.questions.length}（2〜5問であること）`)
+  }
+
+  for (const question of set.questions) {
     const qWhere = `${where} / ${question.id}`
     part7QuestionCount += 1
-
-    if (seenPart7.has(question.id)) fail(qWhere, "設問 id が重複している")
-    seenPart7.add(question.id)
+    checkId(qWhere, question.id)
 
     if (!question.question.trim()) fail(qWhere, "設問文が空")
     checkChoices(qWhere, question.choices, question.answer)
     if (!question.explanation.trim()) fail(qWhere, "解説が空")
+    part7Answers[question.answer] += 1
   }
+}
+
+// ---- フレーズカード ---------------------------------------------------
+const phraseCategoryIds = new Set(
+  PHRASE_CATEGORIES.map((category) => category.id)
+)
+const phraseByCategory = new Map()
+const seenPhrases = new Set()
+
+for (const card of PHRASE_CARDS) {
+  const where = `フレーズ ${card.id}`
+  checkId(where, card.id)
+
+  if (!phraseCategoryIds.has(card.category)) {
+    fail(where, `未定義の分類（${card.category}）`)
+  }
+
+  const key = card.phrase.trim().toLowerCase()
+  if (seenPhrases.has(key)) fail(where, `同じフレーズが重複している（${card.phrase}）`)
+  seenPhrases.add(key)
+
+  if (!card.phrase.trim()) fail(where, "フレーズが空")
+  if (!card.meaning.trim()) fail(where, "意味が空")
+  if (!card.example.trim()) fail(where, "例文が空")
+  if (!card.exampleTranslation.trim()) fail(where, "例文の和訳が空")
+
+  phraseByCategory.set(
+    card.category,
+    (phraseByCategory.get(card.category) ?? 0) + 1
+  )
+}
+
+for (const id of phraseCategoryIds) {
+  if (!phraseByCategory.has(id)) fail(`フレーズ分類 ${id}`, "カードが1枚もない")
 }
 
 // ---- 結果 ------------------------------------------------------------
 rmSync(tmp, { recursive: true, force: true })
 
-console.log(`Part 5: ${PART5_QUESTIONS.length} 問 / ${categoryIds.size} カテゴリ`)
-for (const [category, counts] of [...answerByCategory].sort()) {
+console.log(`Part 5: ${part5.length} 問`)
+for (const [key, counts] of [...answerByGroup].sort()) {
   const total = counts.reduce((sum, value) => sum + value, 0)
-  console.log(`  ${category.padEnd(12)} ${total} 問  正解の位置 A/B/C/D = ${counts.join("/")}`)
+  console.log(
+    `  ${key.padEnd(22)} ${String(total).padStart(3)} 問  正解の位置 A/B/C/D = ${counts.join("/")}`
+  )
 }
-console.log(`Part 7: ${PART7_PASSAGES.length} 文書 / ${part7QuestionCount} 問`)
+console.log(
+  `Part 7: ${part7.length} セット / ${part7QuestionCount} 問（うち複数文書 ${multiDocumentSets} セット）`
+)
+console.log(`  正解の位置 A/B/C/D = ${part7Answers.join("/")}`)
+console.log(`フレーズ: ${PHRASE_CARDS.length} 枚`)
+for (const [category, count] of [...phraseByCategory].sort()) {
+  console.log(`  ${category.padEnd(14)} ${String(count).padStart(3)} 枚`)
+}
 
 if (problems.length > 0) {
   console.error(`\n問題が ${problems.length} 件見つかりました:`)

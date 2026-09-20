@@ -5,7 +5,7 @@
 | ページ | アプリ | 内容 |
 | --- | --- | --- |
 | `/` | かなフラッシュ | ひらがな・カタカナをフラッシュカードで覚える |
-| `/toeic` | TOEIC トレーナー | TOEIC Part 5・Part 7 を間隔反復で解く |
+| `/toeic` | TOEIC トレーナー | 頻出フレーズと TOEIC Part 5・Part 7 を間隔反復で解く |
 
 ## 使い方
 
@@ -45,33 +45,54 @@ TOEIC への導線はこのビルドでは消えます（`NEXT_PUBLIC_SINGLE_FIL
 
 ## TOEIC トレーナー（`/toeic`）
 
-700点前後を目標に、Part 5（短文穴埋め）と Part 7（読解）を解くための個人用アプリです。
+800点を目標に、頻出フレーズ・Part 5（短文穴埋め）・Part 7（読解）を解くための
+個人用アプリです。収録は合計388問。
 
-- **Part 5** 120問。文法・語彙の10カテゴリ（品詞・動詞の形・態・前置詞・接続詞・
-  代名詞・関係詞・比較・準動詞・語彙）× 各12問
-- **Part 7** 10文書・34問。Eメール、お知らせ、広告、記事、チャット、帳票
+- **フレーズカード** 150枚。頻出のコロケーションと定型表現を6分類（動詞＋名詞 /
+  動詞＋前置詞 / 形容詞＋前置詞 / 前置詞句 / ビジネス定型 / 名詞句）で収録。
+  1枚ごとに意味・例文・和訳と、紛らわしい語との違いの補足が付く
+- **Part 5** 180問。文法・語彙の10カテゴリ × 基礎12問・応用6問。
+  応用は仮定法、倒置、譲歩の as、意味の近い語の使い分けなどを扱う
+- **Part 7** 15セット58問。応用の2セットは、2通の文書を突き合わせないと
+  解けないマルチプルパッセージ
+- 難易度は **基礎（600〜730点帯）** と **応用（730〜860点帯）** を選べる
 - 全問に日本語の解説つき。Part 5 は和訳、Part 7 は本文の和訳も見られる
 - 解くたびに正誤を記録し、**間違えた問題は当日中、正解した問題は
   1日 → 3日 → 7日 → 14日 → 30日** の順に間隔をあけて出題する
-- 1問ごとの解答時間を表示（目安は Part 5 が20秒、Part 7 が60秒）
+- 1問ごとの解答時間を表示（目安はフレーズ15秒、Part 5 が20秒、Part 7 が60秒）
 - 学習記録はブラウザの localStorage にだけ保存する。サーバーには何も送らない
 
 問題はすべてこのリポジトリ用の書き下ろしで、公式問題集や市販教材からの転載は
 していません。要件の詳細は
 [`docs/toeic-requirements.md`](docs/toeic-requirements.md) を参照してください。
 
+> **学習記録について**
+> 記録は開いた端末のブラウザにのみ残ります。別の端末には引き継がれず、
+> ブラウザのサイトデータを削除すると消えます。`localhost:3000` と
+> `localhost:3001` はブラウザ上は別サイト扱いなので、記録も別になります。
+
 ### 問題を足すとき
 
-問題データは `src/lib/toeic/part5-questions.ts` と
-`src/lib/toeic/part7-passages.ts` にあります。追加したら検算してください。
+問題データは `src/lib/toeic/` にあります。難易度帯ごとにファイルを分けています。
+
+| ファイル | 中身 |
+| --- | --- |
+| `phrases.ts` | フレーズカード150枚 |
+| `part5-questions.ts` | Part 5 基礎120問 |
+| `part5-advanced.ts` | Part 5 応用60問 |
+| `part7-sets.ts` | Part 7 基礎10セット |
+| `part7-advanced.ts` | Part 7 応用5セット |
+
+追加したら検算してください。
 
 ```bash
 npm run check:toeic
 ```
 
-id の重複、空所の数、選択肢の重複、正解番号の範囲、解説・和訳の有無を検査し、
-正解の位置（A〜D）の分布を表示します。位置で当てられないよう、Part 5 は
-カテゴリごとに 3/3/3/3 に均してあります。
+id の重複、空所の数、選択肢の重複、正解番号の範囲、解説・和訳の有無、
+フレーズの重複を検査し、正解の位置（A〜D）の分布を表示します。位置で
+当てられないよう、Part 5 基礎はカテゴリごとに 3/3/3/3、応用と Part 7 は
+全体でほぼ均等に配分してあります。
 
 ---
 
@@ -103,13 +124,18 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/components/toeic/toeic-study-screen.tsx` | 出題、計時、正誤判定と解説 |
 | `src/components/toeic/toeic-result-screen.tsx` | 正答率、カテゴリ別、復習の導線 |
 | `src/components/toeic/choice-list.tsx` | 4択の選択肢 |
-| `src/components/toeic/passage-view.tsx` | Part 7 の文書表示と和訳の切替 |
-| `src/lib/toeic/part5-questions.ts` | Part 5 の問題データ（120問） |
-| `src/lib/toeic/part7-passages.ts` | Part 7 の文書と設問（10文書34問） |
+| `src/components/toeic/document-view.tsx` | Part 7 の文書表示（複数文書対応）と和訳の切替 |
+| `src/components/toeic/phrase-view.tsx` | フレーズカードの表と裏 |
+| `src/lib/toeic/phrases.ts` | フレーズカードのデータ |
+| `src/lib/toeic/part5-questions.ts` | Part 5 基礎の問題データ |
+| `src/lib/toeic/part5-advanced.ts` | Part 5 応用の問題データ |
+| `src/lib/toeic/part7-sets.ts` | Part 7 基礎の文書と設問 |
+| `src/lib/toeic/part7-advanced.ts` | Part 7 応用の文書と設問 |
+| `src/lib/toeic/content.ts` | 収録コンテンツのまとめ口と件数 |
 | `src/lib/toeic/srs.ts` | 間隔反復の計算と集計 |
 | `src/lib/toeic/session.ts` | 出題セットの組み立て |
 | `src/lib/toeic/storage.ts` | localStorage への読み書き |
-| `src/lib/toeic/category.ts` | カテゴリの表示名と配色 |
+| `src/lib/toeic/category.ts` | カテゴリ・分類・難易度の表示名と配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
 | `scripts/build-demo.mjs` | かなフラッシュを1枚の HTML へ束ねるスクリプト |
 | `scripts/check-toeic-data.mjs` | TOEIC の問題データの検算 |

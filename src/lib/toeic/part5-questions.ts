@@ -4,7 +4,8 @@ import type { Part5Question } from "@/lib/toeic/types"
  * Part 5（短文穴埋め）の問題。
  *
  * すべてこのアプリのために書き下ろした自作問題で、公式問題集からの転載はない。
- * 難易度は 600〜730 点帯を想定している。
+ * ここに入れるのは level: "core"（600〜730 点帯）の問題。
+ * 730〜860 点帯は part5-advanced.ts に分けている。
  * 空所は types.ts の BLANK（"____"）で表す。
  *
  * 正解の位置（A〜D）はカテゴリごとに均してある。問題を足したときは
@@ -17,6 +18,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-01",
     category: "word-form",
+    level: "core",
     sentence:
       "The new scheduling system has greatly improved the ____ of the packaging department.",
     choices: ["productive", "productively", "productivity", "produce"],
@@ -29,6 +31,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-02",
     category: "word-form",
+    level: "core",
     sentence:
       "All visitors must present a valid ____ card at the reception desk.",
     choices: ["identification", "identified", "identify", "identifiable"],
@@ -41,6 +44,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-03",
     category: "word-form",
+    level: "core",
     sentence: "Ms. Alvarez reviewed the contract ____ before signing it.",
     choices: ["care", "careful", "carefully", "caring"],
     answer: 2,
@@ -52,6 +56,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-04",
     category: "word-form",
+    level: "core",
     sentence:
       "Finishing the lobby renovation two weeks early was a ____ achievement.",
     choices: ["remarked", "remark", "remarkable", "remarkably"],
@@ -64,6 +69,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-05",
     category: "word-form",
+    level: "core",
     sentence: "Our supplier offers a wide ____ of packaging materials.",
     choices: ["selective", "selectively", "select", "selection"],
     answer: 3,
@@ -74,6 +80,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-06",
     category: "word-form",
+    level: "core",
     sentence:
       "The technician explained the installation procedure ____ so that everyone could follow it.",
     choices: ["clarify", "clarity", "clear", "clearly"],
@@ -86,6 +93,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-07",
     category: "word-form",
+    level: "core",
     sentence:
       "Sales figures for the third quarter were ____ higher than the company had forecast.",
     choices: ["considerable", "considerably", "consideration", "consider"],
@@ -98,6 +106,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-08",
     category: "word-form",
+    level: "core",
     sentence:
       "The consultant provided a ____ analysis of our distribution costs.",
     choices: ["detail", "detailed", "details", "detailing"],
@@ -110,6 +119,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-09",
     category: "word-form",
+    level: "core",
     sentence:
       "Mr. Okonkwo is in charge of the ____ of office supplies to all branches.",
     choices: ["distributed", "distribution", "distributor", "distribute"],
@@ -122,6 +132,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-10",
     category: "word-form",
+    level: "core",
     sentence:
       "All expense claims must be submitted ____ through the company portal.",
     choices: ["electronics", "electrify", "electronic", "electronically"],
@@ -134,6 +145,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-11",
     category: "word-form",
+    level: "core",
     sentence:
       "The firm's ____ to customer service has earned it a loyal client base.",
     choices: ["commitment", "committed", "committing", "commit"],
@@ -146,6 +158,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-wf-12",
     category: "word-form",
+    level: "core",
     sentence: "The updated interface is surprisingly ____ to use.",
     choices: ["easy", "easiness", "ease", "easily"],
     answer: 0,
@@ -161,6 +174,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-01",
     category: "verb-form",
+    level: "core",
     sentence:
       "By the time the auditors arrive next Monday, the finance team ____ all of the required documents.",
     choices: ["will have prepared", "is preparing", "prepares", "had prepared"],
@@ -173,6 +187,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-02",
     category: "verb-form",
+    level: "core",
     sentence:
       "Mr. Yamada ____ for Meridian Logistics since he graduated from university.",
     choices: ["will work", "works", "worked", "has worked"],
@@ -185,6 +200,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-03",
     category: "verb-form",
+    level: "core",
     sentence:
       "The board ____ the revised budget proposal at its meeting last Thursday.",
     choices: ["will approve", "approves", "approved", "has approved"],
@@ -197,6 +213,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-04",
     category: "verb-form",
+    level: "core",
     sentence:
       "Each of the branch managers ____ a monthly report to headquarters.",
     choices: ["submitting", "to submit", "submit", "submits"],
@@ -209,6 +226,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-05",
     category: "verb-form",
+    level: "core",
     sentence:
       "If the shipment ____ by Friday, we will notify the client immediately.",
     choices: [
@@ -226,6 +244,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-06",
     category: "verb-form",
+    level: "core",
     sentence:
       "Before the new system was introduced, staff ____ all orders by hand.",
     choices: ["records", "had recorded", "will record", "record"],
@@ -238,6 +257,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-07",
     category: "verb-form",
+    level: "core",
     sentence:
       "The seminar ____ at 9:00 A.M. tomorrow, so participants should arrive by 8:45.",
     choices: ["had begun", "began", "begins", "has begun"],
@@ -250,6 +270,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-08",
     category: "verb-form",
+    level: "core",
     sentence:
       "Neither the supervisor nor the technicians ____ available for comment yesterday.",
     choices: ["is", "has been", "was", "were"],
@@ -262,6 +283,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-09",
     category: "verb-form",
+    level: "core",
     sentence:
       "The number of online orders ____ steadily over the past three years.",
     choices: ["increase", "have increased", "has increased", "are increasing"],
@@ -274,6 +296,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-10",
     category: "verb-form",
+    level: "core",
     sentence:
       "When Mr. Sato called the office, the technicians ____ the air-conditioning unit.",
     choices: ["repaired", "were repairing", "have repaired", "repair"],
@@ -286,6 +309,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-11",
     category: "verb-form",
+    level: "core",
     sentence:
       "By next June, Ms. Green ____ with the firm for ten years.",
     choices: ["was", "will have been", "has been", "is"],
@@ -298,6 +322,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vf-12",
     category: "verb-form",
+    level: "core",
     sentence:
       "The maintenance crew ____ the elevators twice a year in accordance with city regulations.",
     choices: ["inspects", "inspecting", "to inspect", "inspect"],
@@ -314,6 +339,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-01",
     category: "voice",
+    level: "core",
     sentence:
       "The keynote speech ____ by the company president at 10:00 A.M.",
     choices: [
@@ -330,6 +356,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-02",
     category: "voice",
+    level: "core",
     sentence:
       "Visitors ____ to wear identification badges at all times while on site.",
     choices: ["are required", "requiring", "require", "requires"],
@@ -342,6 +369,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-03",
     category: "voice",
+    level: "core",
     sentence: "The defective units ____ to the manufacturer last week.",
     choices: ["are returning", "returned", "were returned", "have returned"],
     answer: 2,
@@ -352,6 +380,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-04",
     category: "voice",
+    level: "core",
     sentence:
       "Conference Room A ____ for the entire afternoon, so please use Room B.",
     choices: ["is reserving", "reserves", "has reserved", "has been reserved"],
@@ -364,6 +393,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-05",
     category: "voice",
+    level: "core",
     sentence:
       "All expense claims must ____ by the department head before payment is made.",
     choices: ["be approved", "being approved", "approve", "approved"],
@@ -376,6 +406,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-06",
     category: "voice",
+    level: "core",
     sentence:
       "Employees ____ a detailed explanation of the new health plan at Monday's briefing.",
     choices: ["gave", "were given", "giving", "have given"],
@@ -388,6 +419,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-07",
     category: "voice",
+    level: "core",
     sentence: "The employee parking lot ____ every Saturday morning.",
     choices: ["cleans", "is cleaned", "has cleaned", "cleaning"],
     answer: 1,
@@ -398,6 +430,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-08",
     category: "voice",
+    level: "core",
     sentence:
       "The revised safety guidelines ____ to all branch offices next month.",
     choices: [
@@ -415,6 +448,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-09",
     category: "voice",
+    level: "core",
     sentence:
       "Ms. Rivera ____ to head the overseas division after ten years in sales.",
     choices: ["has appointed", "appointing", "appointed", "was appointed"],
@@ -427,6 +461,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-10",
     category: "voice",
+    level: "core",
     sentence:
       "The headquarters building ____ in 1987 and has been renovated twice since then.",
     choices: [
@@ -444,6 +479,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-11",
     category: "voice",
+    level: "core",
     sentence: "Refunds ____ only with an original receipt.",
     choices: ["issue", "issues", "are issued", "issuing"],
     answer: 2,
@@ -454,6 +490,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vo-12",
     category: "voice",
+    level: "core",
     sentence: "The merger proposal is currently ____ by the legal department.",
     choices: ["being reviewed", "been reviewed", "review", "reviewing"],
     answer: 0,
@@ -468,6 +505,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-01",
     category: "preposition",
+    level: "core",
     sentence: "The quarterly report must be submitted ____ Friday at the latest.",
     choices: ["until", "by", "since", "during"],
     answer: 1,
@@ -478,6 +516,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-02",
     category: "preposition",
+    level: "core",
     sentence:
       "Please complete the enclosed survey ____ two weeks of receiving it.",
     choices: ["among", "through", "within", "onto"],
@@ -490,6 +529,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-03",
     category: "preposition",
+    level: "core",
     sentence: "The museum is closed ____ national holidays.",
     choices: ["at", "in", "on", "to"],
     answer: 2,
@@ -500,6 +540,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-04",
     category: "preposition",
+    level: "core",
     sentence: "Ms. Lee has managed the Singapore office ____ 2015.",
     choices: ["for", "since", "during", "by"],
     answer: 1,
@@ -511,6 +552,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-05",
     category: "preposition",
+    level: "core",
     sentence: "The airport shuttle departs ____ 15-minute intervals.",
     choices: ["in", "by", "at", "on"],
     answer: 2,
@@ -521,6 +563,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-06",
     category: "preposition",
+    level: "core",
     sentence: "Online sales rose sharply ____ the holiday season.",
     choices: ["during", "since", "while", "among"],
     answer: 0,
@@ -532,6 +575,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-07",
     category: "preposition",
+    level: "core",
     sentence:
       "Distribute the handouts ____ the participants before the session begins.",
     choices: ["into", "over", "between", "among"],
@@ -544,6 +588,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-08",
     category: "preposition",
+    level: "core",
     sentence: "Payment may be made ____ credit card or bank transfer.",
     choices: ["by", "to", "on", "for"],
     answer: 0,
@@ -555,6 +600,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-09",
     category: "preposition",
+    level: "core",
     sentence: "A technician will arrive ____ 30 minutes.",
     choices: ["in", "on", "by", "until"],
     answer: 0,
@@ -565,6 +611,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-10",
     category: "preposition",
+    level: "core",
     sentence:
       "The new branch is located ____ Fifth Avenue and Oak Street.",
     choices: ["within", "along", "among", "between"],
@@ -577,6 +624,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-11",
     category: "preposition",
+    level: "core",
     sentence:
       "____ the heavy rain, the outdoor ceremony proceeded as planned.",
     choices: ["Even though", "Despite", "However", "Although"],
@@ -589,6 +637,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pr-12",
     category: "preposition",
+    level: "core",
     sentence:
       "The company has invested heavily ____ employee training programs.",
     choices: ["at", "for", "of", "in"],
@@ -605,6 +654,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-01",
     category: "conjunction",
+    level: "core",
     sentence:
       "____ the shipment was delayed, the client agreed to extend the deadline.",
     choices: ["Therefore", "Because of", "Because", "Despite"],
@@ -617,6 +667,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-02",
     category: "conjunction",
+    level: "core",
     sentence:
       "The new model is more expensive; ____, it uses far less electricity.",
     choices: ["although", "however", "whereas", "unless"],
@@ -629,6 +680,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-03",
     category: "conjunction",
+    level: "core",
     sentence:
       "Please call the help desk ____ you have trouble logging in to the system.",
     choices: ["if", "whether", "so", "such"],
@@ -641,6 +693,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-04",
     category: "conjunction",
+    level: "core",
     sentence:
       "____ the budget nor the timeline has been finalized.",
     choices: ["Neither", "Not only", "Either", "Both"],
@@ -653,6 +706,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-05",
     category: "conjunction",
+    level: "core",
     sentence:
       "Mr. Tanaka will lead the project ____ Ms. Ito returns from parental leave.",
     choices: ["by", "during", "until", "despite"],
@@ -665,6 +719,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-06",
     category: "conjunction",
+    level: "core",
     sentence:
       "The store offers free delivery ____ the order exceeds 50 dollars.",
     choices: ["due to", "in spite of", "as long as", "because of"],
@@ -677,6 +732,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-07",
     category: "conjunction",
+    level: "core",
     sentence:
       "We hired two temporary staff members ____ meet the increased demand.",
     choices: ["so that", "in order to", "due to", "because"],
@@ -689,6 +745,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-08",
     category: "conjunction",
+    level: "core",
     sentence:
       "____ she had little experience in logistics, Ms. Ford managed the transition smoothly.",
     choices: ["Therefore", "Although", "Despite", "Because of"],
@@ -701,6 +758,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-09",
     category: "conjunction",
+    level: "core",
     sentence:
       "The pilot survey produced disappointing results. ____, the team decided to revise the strategy.",
     choices: ["Consequently", "Nevertheless", "Whereas", "Unless"],
@@ -713,6 +771,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-10",
     category: "conjunction",
+    level: "core",
     sentence:
       "The machine will not start ____ the safety cover is properly closed.",
     choices: ["because", "while", "if", "unless"],
@@ -725,6 +784,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-11",
     category: "conjunction",
+    level: "core",
     sentence:
       "The front desk will remain staffed ____ the lobby renovation is under way.",
     choices: ["during", "for", "among", "while"],
@@ -737,6 +797,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cj-12",
     category: "conjunction",
+    level: "core",
     sentence:
       "Ms. Diaz is fluent ____ in Spanish and in Portuguese.",
     choices: ["neither", "whether", "either", "both"],
@@ -753,6 +814,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-01",
     category: "pronoun",
+    level: "core",
     sentence: "Employees should submit ____ time sheets by Friday afternoon.",
     choices: ["theirs", "they", "them", "their"],
     answer: 3,
@@ -764,6 +826,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-02",
     category: "pronoun",
+    level: "core",
     sentence: "The final decision about the venue is ____.",
     choices: ["yours", "yourself", "you", "your"],
     answer: 0,
@@ -775,6 +838,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-03",
     category: "pronoun",
+    level: "core",
     sentence:
       "Ms. Harper prepared the entire presentation ____ in just two days.",
     choices: ["her", "hers", "herself", "she"],
@@ -787,6 +851,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-04",
     category: "pronoun",
+    level: "core",
     sentence: "____ of the two proposals meets the client's budget.",
     choices: ["None", "Any", "Every", "Neither"],
     answer: 3,
@@ -798,6 +863,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-05",
     category: "pronoun",
+    level: "core",
     sentence:
       "Our shipping rates are significantly lower than ____ of our competitors.",
     choices: ["they", "that", "those", "them"],
@@ -810,6 +876,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-06",
     category: "pronoun",
+    level: "core",
     sentence:
       "If you have not received a visitor badge, please request ____ at the front desk.",
     choices: ["some", "any", "it", "one"],
@@ -822,6 +889,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-07",
     category: "pronoun",
+    level: "core",
     sentence:
       "The director asked Mr. Ross and ____ to lead the internal audit.",
     choices: ["I", "me", "my", "mine"],
@@ -834,6 +902,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-08",
     category: "pronoun",
+    level: "core",
     sentence:
       "Most of the testing equipment in the laboratory is ____.",
     choices: ["us", "our", "ours", "ourselves"],
@@ -846,6 +915,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-09",
     category: "pronoun",
+    level: "core",
     sentence:
       "____ interested in the leadership program should contact Human Resources.",
     choices: ["Those", "Whom", "They", "Them"],
@@ -858,6 +928,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-10",
     category: "pronoun",
+    level: "core",
     sentence: "The committee will announce ____ decision on Monday.",
     choices: ["it", "its", "it's", "itself"],
     answer: 1,
@@ -869,6 +940,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-11",
     category: "pronoun",
+    level: "core",
     sentence: "Please help ____ to the refreshments in the lobby.",
     choices: ["yours", "yourself", "you", "your"],
     answer: 1,
@@ -880,6 +952,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-pn-12",
     category: "pronoun",
+    level: "core",
     sentence:
       "All of the display samples were damaged, so the store ordered new ____.",
     choices: ["ones", "it", "them", "one"],
@@ -896,6 +969,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-01",
     category: "relative",
+    level: "core",
     sentence:
       "The candidate ____ resume impressed the hiring panel will be interviewed tomorrow.",
     choices: ["whose", "which", "who", "whom"],
@@ -908,6 +982,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-02",
     category: "relative",
+    level: "core",
     sentence:
       "The annual report, ____ was released yesterday, contains several corrections.",
     choices: ["which", "what", "who", "that"],
@@ -920,6 +995,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-03",
     category: "relative",
+    level: "core",
     sentence:
       "Only employees ____ have completed the safety training may operate the forklift.",
     choices: ["who", "whom", "whose", "which"],
@@ -932,6 +1008,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-04",
     category: "relative",
+    level: "core",
     sentence:
       "This is the warehouse ____ the damaged goods are currently stored.",
     choices: ["that", "where", "what", "which"],
@@ -944,6 +1021,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-05",
     category: "relative",
+    level: "core",
     sentence: "We are looking for a supplier ____ can deliver within 48 hours.",
     choices: ["where", "what", "that", "whose"],
     answer: 2,
@@ -955,6 +1033,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-06",
     category: "relative",
+    level: "core",
     sentence:
       "The reason ____ the flight was canceled has not been explained.",
     choices: ["what", "whose", "why", "which"],
@@ -967,6 +1046,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-07",
     category: "relative",
+    level: "core",
     sentence:
       "Mr. Blake is the colleague with ____ I shared an office for five years.",
     choices: ["which", "that", "who", "whom"],
@@ -979,6 +1059,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-08",
     category: "relative",
+    level: "core",
     sentence: "The selection committee will hire ____ is most qualified.",
     choices: ["whom", "whoever", "whomever", "who"],
     answer: 1,
@@ -990,6 +1071,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-09",
     category: "relative",
+    level: "core",
     sentence:
       "2019 was the year ____ the company entered the Asian market.",
     choices: ["what", "whose", "when", "which"],
@@ -1002,6 +1084,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-10",
     category: "relative",
+    level: "core",
     sentence:
       "The revised proposal ____ the committee approved will take effect in July.",
     choices: ["who", "that", "what", "where"],
@@ -1014,6 +1097,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-11",
     category: "relative",
+    level: "core",
     sentence:
       "Our new office, ____ is located near the station, will open in May.",
     choices: ["where", "that", "what", "which"],
@@ -1026,6 +1110,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-rl-12",
     category: "relative",
+    level: "core",
     sentence:
       "____ the maintenance team recommends will be included in next year's budget.",
     choices: ["Which", "Whose", "That", "What"],
@@ -1042,6 +1127,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-01",
     category: "comparison",
+    level: "core",
     sentence:
       "This year's advertising budget is ____ than last year's.",
     choices: ["higher", "highest", "highly", "high"],
@@ -1054,6 +1140,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-02",
     category: "comparison",
+    level: "core",
     sentence: "The Osaka branch is the ____ of the company's five offices.",
     choices: ["larger", "largest", "largely", "large"],
     answer: 1,
@@ -1065,6 +1152,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-03",
     category: "comparison",
+    level: "core",
     sentence:
       "The revised workflow is far ____ efficient than the previous one.",
     choices: ["more", "most", "very", "much"],
@@ -1077,6 +1165,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-04",
     category: "comparison",
+    level: "core",
     sentence: "Please respond to the client's inquiry as ____ as possible.",
     choices: ["soonest", "sooner than", "soon", "sooner"],
     answer: 2,
@@ -1088,6 +1177,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-05",
     category: "comparison",
+    level: "core",
     sentence:
       "Of the three finalists, Ms. Weber has the ____ international experience.",
     choices: ["many", "more", "most", "much"],
@@ -1100,6 +1190,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-06",
     category: "comparison",
+    level: "core",
     sentence:
       "The upgraded model costs twice as ____ as the original version.",
     choices: ["more", "most", "many", "much"],
@@ -1112,6 +1203,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-07",
     category: "comparison",
+    level: "core",
     sentence:
       "Attendance at this year's trade show was slightly ____ than we had expected.",
     choices: ["low", "lower", "lowest", "lowly"],
@@ -1124,6 +1216,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-08",
     category: "comparison",
+    level: "core",
     sentence:
       "The more carefully you proofread the draft, the ____ errors you will find later.",
     choices: ["few", "fewer", "fewest", "less"],
@@ -1136,6 +1229,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-09",
     category: "comparison",
+    level: "core",
     sentence:
       "No other supplier in the region offers ____ rates than Harbor Freight.",
     choices: [
@@ -1153,6 +1247,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-10",
     category: "comparison",
+    level: "core",
     sentence:
       "The main hall can accommodate ____ people than the east auditorium.",
     choices: ["most", "many", "much", "more"],
@@ -1165,6 +1260,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-11",
     category: "comparison",
+    level: "core",
     sentence:
       "The new printer is not nearly as ____ as the model it replaced.",
     choices: ["noisiest", "noise", "noisy", "noisier"],
@@ -1177,6 +1273,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-cm-12",
     category: "comparison",
+    level: "core",
     sentence:
       "Fourth-quarter sales were the ____ in the company's forty-year history.",
     choices: ["strongly", "strong", "stronger", "strongest"],
@@ -1193,6 +1290,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-01",
     category: "verbal",
+    level: "core",
     sentence:
       "The project manager decided ____ the kickoff meeting until next week.",
     choices: ["postponed", "postpone", "to postpone", "postponing"],
@@ -1205,6 +1303,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-02",
     category: "verbal",
+    level: "core",
     sentence: "We appreciate your ____ the customer survey so promptly.",
     choices: ["completed", "completing", "to complete", "complete"],
     answer: 1,
@@ -1216,6 +1315,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-03",
     category: "verbal",
+    level: "core",
     sentence:
       "____ in 1998, the Riverton plant now employs more than 400 workers.",
     choices: ["Founding", "Founded", "To found", "Founds"],
@@ -1228,6 +1328,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-04",
     category: "verbal",
+    level: "core",
     sentence:
       "The board is considering ____ a second distribution center next year.",
     choices: ["open", "to open", "opening", "opened"],
@@ -1240,6 +1341,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-05",
     category: "verbal",
+    level: "core",
     sentence:
       "Passengers waiting ____ board should remain behind the yellow line.",
     choices: ["for", "of", "at", "to"],
@@ -1252,6 +1354,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-06",
     category: "verbal",
+    level: "core",
     sentence: "The documents ____ to this message are strictly confidential.",
     choices: ["attached", "to attach", "attach", "attaching"],
     answer: 0,
@@ -1263,6 +1366,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-07",
     category: "verbal",
+    level: "core",
     sentence:
       "Ms. Nakamura is looking forward to ____ the new clients at the reception.",
     choices: ["meet", "meeting", "met", "be met"],
@@ -1275,6 +1379,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-08",
     category: "verbal",
+    level: "core",
     sentence:
       "____ heavy traffic near the airport, we left the office an hour early.",
     choices: ["To anticipate", "Anticipate", "Anticipated", "Anticipating"],
@@ -1287,6 +1392,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-09",
     category: "verbal",
+    level: "core",
     sentence:
       "The contractor failed ____ the deadline specified in the agreement.",
     choices: ["meet", "meeting", "to meet", "met"],
@@ -1299,6 +1405,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-10",
     category: "verbal",
+    level: "core",
     sentence:
       "All staff members are encouraged ____ in the annual wellness program.",
     choices: ["participated", "participate", "participating", "to participate"],
@@ -1311,6 +1418,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-11",
     category: "verbal",
+    level: "core",
     sentence:
       "The setup instructions were unclear, leaving many customers ____.",
     choices: ["frustrated", "to frustrate", "frustrate", "frustrating"],
@@ -1323,6 +1431,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vb-12",
     category: "verbal",
+    level: "core",
     sentence:
       "Before ____ the cutting machine, please read the safety manual in full.",
     choices: ["operating", "operated", "to operate", "operate"],
@@ -1339,6 +1448,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-01",
     category: "vocabulary",
+    level: "core",
     sentence:
       "Please ____ the enclosed form and return it in the prepaid envelope.",
     choices: ["accomplish", "finish", "complete", "achieve"],
@@ -1351,6 +1461,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-02",
     category: "vocabulary",
+    level: "core",
     sentence:
       "The standard warranty does not ____ damage caused by improper use.",
     choices: ["contain", "cover", "include", "involve"],
@@ -1363,6 +1474,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-03",
     category: "vocabulary",
+    level: "core",
     sentence:
       "The airline apologized for the ____ caused by the three-hour delay.",
     choices: ["disagreement", "interruption", "objection", "inconvenience"],
@@ -1375,6 +1487,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-04",
     category: "vocabulary",
+    level: "core",
     sentence:
       "All contractors must ____ with the updated safety regulations.",
     choices: ["follow", "comply", "observe", "obey"],
@@ -1387,6 +1500,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-05",
     category: "vocabulary",
+    level: "core",
     sentence:
       "Harborline Foods plans to ____ its operations into Southeast Asia.",
     choices: ["enlarge", "expand", "increase", "extend"],
@@ -1399,6 +1513,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-06",
     category: "vocabulary",
+    level: "core",
     sentence:
       "Mr. Delgado was ____ for his outstanding contribution to the merger project.",
     choices: ["noticed", "realized", "understood", "recognized"],
@@ -1411,6 +1526,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-07",
     category: "vocabulary",
+    level: "core",
     sentence:
       "Customers should ____ the original receipt in case an exchange is needed.",
     choices: ["retain", "maintain", "sustain", "remain"],
@@ -1423,6 +1539,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-08",
     category: "vocabulary",
+    level: "core",
     sentence:
       "The consultant made several practical ____ for improving the workflow.",
     choices: ["informations", "advices", "suggestions", "opinions"],
@@ -1435,6 +1552,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-09",
     category: "vocabulary",
+    level: "core",
     sentence:
       "The shipment was delayed because of ____ weather conditions along the coast.",
     choices: ["averse", "diverse", "adverse", "reverse"],
@@ -1447,6 +1565,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-10",
     category: "vocabulary",
+    level: "core",
     sentence:
       "Attendance at the two-day orientation is ____ for all new hires.",
     choices: ["mandatory", "required to", "necessarily", "obligated"],
@@ -1459,6 +1578,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-11",
     category: "vocabulary",
+    level: "core",
     sentence:
       "By switching to a local supplier, the plant was able to ____ shipping costs by 18 percent.",
     choices: ["reduce", "lower down", "shorten", "decline"],
@@ -1471,6 +1591,7 @@ export const PART5_QUESTIONS: Part5Question[] = [
   {
     id: "p5-vc-12",
     category: "vocabulary",
+    level: "core",
     sentence:
       "The renovation is expected to be completed ____ of schedule.",
     choices: ["front", "early", "advance", "ahead"],

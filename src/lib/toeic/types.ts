@@ -8,6 +8,13 @@
 /** 問題文中の空所を表すトークン。表示時にこの文字列で分割する。 */
 export const BLANK = "____"
 
+/**
+ * 難易度帯。
+ * core     … 600〜730 点帯。土台づくり
+ * advanced … 730〜860 点帯。800 点をねらうための上積み
+ */
+export type Level = "core" | "advanced"
+
 /** Part 5 の文法・語彙カテゴリ */
 export type Part5Category =
   | "word-form"
@@ -24,6 +31,7 @@ export type Part5Category =
 export type Part5Question = {
   id: string
   category: Part5Category
+  level: Level
   /** BLANK を1つ含む英文 */
   sentence: string
   /** 4つの選択肢（A〜D の順） */
@@ -44,18 +52,11 @@ export type Part7DocType =
   | "article"
   | "text-message"
   | "form"
+  | "schedule"
+  | "review"
 
-export type Part7Question = {
-  id: string
-  question: string
-  choices: [string, string, string, string]
-  answer: number
-  explanation: string
-}
-
-/** Part 7 の1文書（シングルパッセージ）とその設問 */
-export type Part7Passage = {
-  id: string
+/** Part 7 の文書1通 */
+export type Part7Document = {
   docType: Part7DocType
   /** 文書の見出し（件名や広告タイトルなど） */
   title: string
@@ -65,26 +66,74 @@ export type Part7Passage = {
   body: string
   /** 本文の和訳 */
   translation: string
+}
+
+export type Part7Question = {
+  id: string
+  question: string
+  choices: [string, string, string, string]
+  answer: number
+  explanation: string
+}
+
+/**
+ * Part 7 の1セット。
+ * documents が1通ならシングルパッセージ、2通以上ならマルチプルパッセージ。
+ * 後者は2通の情報を突き合わせないと解けない設問を含み、800 点帯の要になる。
+ */
+export type Part7Set = {
+  id: string
+  level: Level
+  documents: Part7Document[]
   questions: Part7Question[]
 }
 
-/** 出題1件分。Part 5 と Part 7 を同じ器で扱う。 */
+/** フレーズカードの分類 */
+export type PhraseCategory =
+  | "verb-noun"
+  | "verb-prep"
+  | "adj-prep"
+  | "prep-phrase"
+  | "business"
+  | "noun-phrase"
+
+/** 覚えるフレーズ1枚分 */
+export type PhraseCard = {
+  id: string
+  category: PhraseCategory
+  /** カードの表に出すフレーズ */
+  phrase: string
+  /** 日本語の意味 */
+  meaning: string
+  /** 使い方が分かる例文 */
+  example: string
+  /** 例文の和訳 */
+  exampleTranslation: string
+  /** 紛らわしい語との違いなど。無い場合もある */
+  note?: string
+}
+
+/** 出題1件分。4択問題とフレーズカードを同じ器で扱う。 */
 export type Item =
   | { kind: "part5"; id: string; question: Part5Question }
   | {
       kind: "part7"
       id: string
-      passage: Part7Passage
+      set: Part7Set
       question: Part7Question
-      /** パッセージ内での設問番号（1始まり） */
-      indexInPassage: number
+      /** セット内での設問番号（1始まり） */
+      indexInSet: number
       questionCount: number
     }
+  | { kind: "phrase"; id: string; card: PhraseCard }
 
 /** 1問への回答結果 */
 export type ItemResult = {
   itemId: string
-  /** 選んだ選択肢の添字。時間切れなどで未選択なら null */
+  /**
+   * 選んだ選択肢の添字。
+   * フレーズカードでは「おぼえてた」を1、「あやふや」を0として記録する。
+   */
   selected: number | null
   correct: boolean
   /** 解答にかかった秒数 */

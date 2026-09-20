@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { categoryMeta } from "@/lib/toeic/category"
+import { categoryMeta, phraseCategoryMeta } from "@/lib/toeic/category"
 import { BLANK, type Item, type ItemResult } from "@/lib/toeic/types"
 import { cn } from "@/lib/utils"
 
@@ -128,14 +128,14 @@ export function ToeicResultScreen({
       {wrong.length > 0 && (
         <Card className="rounded-3xl border-2 shadow-sm">
           <CardContent className="flex flex-col gap-3">
-            <h2 className="text-sm font-bold">まちがえた問題</h2>
+            <h2 className="text-sm font-bold">見直したい問題</h2>
             <ul className="flex flex-col gap-3">
               {wrong.map((item) => (
                 <li
                   key={item.id}
                   className="border-border flex flex-col gap-1 border-l-2 pl-3"
                 >
-                  {item.kind === "part5" ? (
+                  {item.kind === "part5" && (
                     <>
                       <Badge
                         variant="secondary"
@@ -150,7 +150,9 @@ export function ToeicResultScreen({
                         )}
                       </p>
                     </>
-                  ) : (
+                  )}
+
+                  {item.kind === "part7" && (
                     <>
                       <Badge
                         variant="secondary"
@@ -166,11 +168,28 @@ export function ToeicResultScreen({
                       </p>
                     </>
                   )}
+
+                  {item.kind === "phrase" && (
+                    <>
+                      <Badge
+                        variant="secondary"
+                        className="w-fit text-[0.6rem]"
+                      >
+                        {phraseCategoryMeta(item.card.category).label}
+                      </Badge>
+                      <p className="font-english text-[0.85rem] leading-snug font-bold">
+                        {item.card.phrase}
+                      </p>
+                      <p className="text-muted-foreground text-[0.75rem]">
+                        {item.card.meaning}
+                      </p>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
             <p className="text-muted-foreground text-xs">
-              まちがえた問題は、次の「復習」メニューにそのまま並びます。
+              ここに出たものは、次の「復習」メニューにそのまま並びます。
             </p>
           </CardContent>
         </Card>

@@ -1,4 +1,9 @@
-import type { Part5Category, Part7DocType } from "@/lib/toeic/types"
+import type {
+  Level,
+  Part5Category,
+  Part7DocType,
+  PhraseCategory,
+} from "@/lib/toeic/types"
 
 /**
  * カテゴリの表示名と配色。
@@ -123,4 +128,88 @@ export const DOC_TYPE_LABEL: Record<Part7DocType, string> = {
   article: "記事",
   "text-message": "チャット",
   form: "申込書・帳票",
+  schedule: "日程表",
+  review: "レビュー",
+}
+
+/** 難易度帯の表示 */
+export const LEVEL_LABEL: Record<Level, string> = {
+  core: "基礎（600〜730）",
+  advanced: "応用（730〜860）",
+}
+
+export const LEVEL_SHORT: Record<Level, string> = {
+  core: "基礎",
+  advanced: "応用",
+}
+
+/** フレーズカードの分類 */
+export type PhraseCategoryMeta = {
+  id: PhraseCategory
+  label: string
+  hint: string
+  chip: string
+  chipActive: string
+  text: string
+}
+
+export const PHRASE_CATEGORIES: PhraseCategoryMeta[] = [
+  {
+    id: "verb-noun",
+    label: "動詞＋名詞",
+    hint: "meet a deadline など",
+    chip: "border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 dark:border-sky-900/60 dark:bg-sky-950/40 dark:text-sky-200 dark:hover:bg-sky-950/70",
+    chipActive: "border-sky-500 bg-sky-600 text-white dark:border-sky-400 dark:bg-sky-500",
+    text: "text-sky-700 dark:text-sky-300",
+  },
+  {
+    id: "verb-prep",
+    label: "動詞＋前置詞",
+    hint: "comply with など",
+    chip: "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-200 dark:hover:bg-indigo-950/70",
+    chipActive: "border-indigo-500 bg-indigo-600 text-white dark:border-indigo-400 dark:bg-indigo-500",
+    text: "text-indigo-700 dark:text-indigo-300",
+  },
+  {
+    id: "adj-prep",
+    label: "形容詞＋前置詞",
+    hint: "be eligible for など",
+    chip: "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 dark:border-violet-900/60 dark:bg-violet-950/40 dark:text-violet-200 dark:hover:bg-violet-950/70",
+    chipActive: "border-violet-500 bg-violet-600 text-white dark:border-violet-400 dark:bg-violet-500",
+    text: "text-violet-700 dark:text-violet-300",
+  },
+  {
+    id: "prep-phrase",
+    label: "前置詞句",
+    hint: "in accordance with など",
+    chip: "border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-200 dark:hover:bg-teal-950/70",
+    chipActive: "border-teal-500 bg-teal-600 text-white dark:border-teal-400 dark:bg-teal-500",
+    text: "text-teal-700 dark:text-teal-300",
+  },
+  {
+    id: "business",
+    label: "ビジネス定型",
+    hint: "Please be advised that など",
+    chip: "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200 dark:hover:bg-amber-950/70",
+    chipActive: "border-amber-500 bg-amber-600 text-white dark:border-amber-400 dark:bg-amber-500",
+    text: "text-amber-700 dark:text-amber-300",
+  },
+  {
+    id: "noun-phrase",
+    label: "名詞句",
+    hint: "purchase order など",
+    chip: "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200 dark:hover:bg-rose-950/70",
+    chipActive: "border-rose-500 bg-rose-600 text-white dark:border-rose-400 dark:bg-rose-500",
+    text: "text-rose-700 dark:text-rose-300",
+  },
+]
+
+const PHRASE_CATEGORY_BY_ID = new Map(
+  PHRASE_CATEGORIES.map((category) => [category.id, category])
+)
+
+export function phraseCategoryMeta(id: PhraseCategory): PhraseCategoryMeta {
+  const meta = PHRASE_CATEGORY_BY_ID.get(id)
+  if (!meta) throw new Error(`未定義のフレーズ分類: ${id}`)
+  return meta
 }

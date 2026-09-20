@@ -1,5 +1,4 @@
-import { PART5_QUESTIONS } from "@/lib/toeic/part5-questions"
-import { PART7_PASSAGES } from "@/lib/toeic/part7-passages"
+import { ALL_PART5, ALL_PART7, ALL_PHRASES } from "@/lib/toeic/content"
 import type { Item, Part5Category } from "@/lib/toeic/types"
 
 /** 1問ごとの学習記録 */
@@ -43,26 +42,32 @@ const DAY_MS = 24 * 60 * 60 * 1000
 export const BOX_INTERVAL_DAYS = [0, 1, 3, 7, 14, 30]
 export const MAX_BOX = BOX_INTERVAL_DAYS.length - 1
 
-/** 全出題（Part 5 + Part 7）を1つの配列に並べる */
+/** 全出題（Part 5 + Part 7 + フレーズ）を1つの配列に並べる */
 export function allItems(): Item[] {
-  const part5: Item[] = PART5_QUESTIONS.map((question) => ({
+  const part5: Item[] = ALL_PART5.map((question) => ({
     kind: "part5",
     id: question.id,
     question,
   }))
 
-  const part7: Item[] = PART7_PASSAGES.flatMap((passage) =>
-    passage.questions.map((question, index) => ({
+  const part7: Item[] = ALL_PART7.flatMap((set) =>
+    set.questions.map((question, index) => ({
       kind: "part7" as const,
       id: question.id,
-      passage,
+      set,
       question,
-      indexInPassage: index + 1,
-      questionCount: passage.questions.length,
+      indexInSet: index + 1,
+      questionCount: set.questions.length,
     }))
   )
 
-  return [...part5, ...part7]
+  const phrases: Item[] = ALL_PHRASES.map((card) => ({
+    kind: "phrase",
+    id: card.id,
+    card,
+  }))
+
+  return [...part5, ...part7, ...phrases]
 }
 
 const ALL_ITEMS = allItems()
@@ -184,7 +189,7 @@ export type CategoryStat = {
 export function categoryStats(log: StudyLog): CategoryStat[] {
   const byCategory = new Map<Part5Category, CategoryStat>()
 
-  for (const question of PART5_QUESTIONS) {
+  for (const question of ALL_PART5) {
     const stat = byCategory.get(question.category) ?? {
       category: question.category,
       seen: 0,

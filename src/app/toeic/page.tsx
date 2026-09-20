@@ -8,17 +8,24 @@ import {
 } from "@/components/toeic/toeic-home-screen"
 import { ToeicResultScreen } from "@/components/toeic/toeic-result-screen"
 import { ToeicStudyScreen } from "@/components/toeic/toeic-study-screen"
-import { PART5_CATEGORIES } from "@/lib/toeic/category"
+import { PART5_CATEGORIES, PHRASE_CATEGORIES } from "@/lib/toeic/category"
 import {
   REVIEW_LENGTH,
   buildPart5Session,
   buildPart7Session,
+  buildPhraseSession,
   buildReviewSession,
   shuffled,
 } from "@/lib/toeic/session"
 import { mergeResults } from "@/lib/toeic/srs"
 import { resetLog, useStudyLog, writeLog } from "@/lib/toeic/storage"
-import type { Item, ItemResult, Part5Category } from "@/lib/toeic/types"
+import type {
+  Item,
+  ItemResult,
+  Level,
+  Part5Category,
+  PhraseCategory,
+} from "@/lib/toeic/types"
 
 type Screen = "home" | "study" | "result"
 
@@ -27,12 +34,17 @@ export default function ToeicPage() {
   // ハイドレーション後に本物へ差し替わる（at が 0 でなくなる）。
   const { log, at } = useStudyLog()
 
-  const [mode, setMode] = useState<StudyMode>("part5")
+  const [mode, setMode] = useState<StudyMode>("phrase")
   const [categories, setCategories] = useState<Part5Category[]>(
     PART5_CATEGORIES.map((category) => category.id)
   )
+  const [levels, setLevels] = useState<Level[]>(["core", "advanced"])
   const [part5Length, setPart5Length] = useState(10)
   const [part7Count, setPart7Count] = useState(1)
+  const [phraseCategories, setPhraseCategories] = useState<PhraseCategory[]>(
+    PHRASE_CATEGORIES.map((category) => category.id)
+  )
+  const [phraseLength, setPhraseLength] = useState(20)
 
   const [screen, setScreen] = useState<Screen>("home")
   const [deck, setDeck] = useState<Item[]>([])
@@ -55,13 +67,27 @@ export default function ToeicPage() {
       startDeck(buildReviewSession(REVIEW_LENGTH, log, now))
       return
     }
-    if (mode === "part5") {
+    if (mode === "phrase") {
       startDeck(
-        buildPart5Session({ categories, length: part5Length }, log, now)
+        buildPhraseSession(
+          { categories: phraseCategories, length: phraseLength },
+          log,
+          now
+        )
       )
       return
     }
-    startDeck(buildPart7Session(part7Count, log, now))
+    if (mode === "part5") {
+      startDeck(
+        buildPart5Session(
+          { categories, levels, length: part5Length },
+          log,
+          now
+        )
+      )
+      return
+    }
+    startDeck(buildPart7Session(levels, part7Count, log, now))
   }
 
   function handleFinish(sessionResults: ItemResult[]) {
@@ -101,10 +127,16 @@ export default function ToeicPage() {
           onModeChange={setMode}
           categories={categories}
           onCategoriesChange={setCategories}
+          levels={levels}
+          onLevelsChange={setLevels}
           part5Length={part5Length}
           onPart5LengthChange={setPart5Length}
           part7Count={part7Count}
           onPart7CountChange={setPart7Count}
+          phraseCategories={phraseCategories}
+          onPhraseCategoriesChange={setPhraseCategories}
+          phraseLength={phraseLength}
+          onPhraseLengthChange={setPhraseLength}
           onStart={handleStart}
           onResetLog={handleResetLog}
         />
