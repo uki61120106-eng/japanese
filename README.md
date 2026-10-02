@@ -10,11 +10,22 @@
 
 要件の詳細は [`docs/requirements.md`](docs/requirements.md) を参照してください。
 
+### インドネシア語会話「Ayo Bicara!」（`/indonesian`）
+
+場面別の会話で、インドネシア語を読んで・聞いて・ロールプレイで練習するページ。
+
+- 6場面（あいさつ・自己紹介・買い物・レストラン・道案内・ホテル）を収録
+- 各セリフにカタカナ読みと日本語訳、ブラウザ内蔵の音声で読み上げ（ゆっくり再生あり）
+- ロールプレイでは役を選び、自分の番に日本語の意味に合う文を3択で選んで会話を進める
+
+要件と、次の段階（AI との自由会話）の論点は
+[`docs/indonesian-requirements.md`](docs/indonesian-requirements.md) を参照してください。
+
 ## 使い方
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000
+npm run dev     # http://localhost:3000（インドネシア語は /indonesian）
 ```
 
 本番ビルドは `npm run build` → `npm run start`。
@@ -54,6 +65,11 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/row-theme.ts` | 行ごとの配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
 | `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
+| `src/app/indonesian/page.tsx` | インドネシア語会話ページ |
+| `src/components/indonesian/` | 場面一覧・会話表示・ロールプレイの画面 |
+| `src/lib/indonesian/scenes.ts` | 会話データ（文・カタカナ読み・訳・語彙） |
+| `src/lib/indonesian/roleplay.ts` | ロールプレイの出題（選択肢の生成） |
+| `src/lib/indonesian/use-speech.ts` | ブラウザ内蔵の読み上げ |
 
 ## 技術
 
