@@ -35,7 +35,8 @@ npm run dev     # http://localhost:3000（インドネシア語は /indonesian�
 リンクを渡して触ってもらいたいときは、アプリ全体を単一の HTML に束ねられます。
 
 ```bash
-npm run build:demo      # dist-demo/index.html
+npm run build:demo               # dist-demo/index.html（かなフラッシュ）
+npm run build:demo:indonesian    # dist-demo/indonesian.html（Ayo Bicara!）
 ```
 
 表示に使う文字のフォントだけを埋め込むので、生成後はネット接続なしで動きます
