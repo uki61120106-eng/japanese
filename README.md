@@ -10,6 +10,39 @@
 
 要件の詳細は [`docs/requirements.md`](docs/requirements.md) を参照してください。
 
+## おうち筋トレ20（`/workout`）
+
+同じアプリの中に、道具を使わない自宅トレーニングのアプリも入っています。
+
+- 毎日20分（ウォームアップ3分 + メイン14分 + ストレッチ3分）、曜日ごとにメニューが変わる
+- 初級 / 中級 / 上級、ジャンプしない静音モード、音声ガイド付きのタイマー
+- 体重を記録して「1年で −3kg」の目標ラインと比べられる
+- 全種目に動きのアニメーション図、食事の工夫のワンタップ記録
+- 毎日のリマインダー（スマホのカレンダーに登録 / アプリを開いている間の通知）
+- 記録は端末のブラウザに保存（通信なし）。「設定」タブからバックアップ・復元できる
+
+要件は [`docs/workout-requirements.md`](docs/workout-requirements.md)。
+
+### スマホで使う
+
+ホーム画面に追加できるウェブアプリ（PWA）になっています。一度開けば通信がなくても起動します。
+
+1. 下の「Vercel へのデプロイ」で公開する（スマホから開くには https の URL が必要）
+2. スマホのブラウザで `https://<公開先>/workout` を開く
+3. iPhone は Safari の共有ボタン →「ホーム画面に追加」、Android は表示される「ホーム画面に追加する」ボタン
+   （出ない場合はブラウザのメニュー →「ホーム画面に追加」）
+
+記録は端末のブラウザに保存されます。iPhone では Safari とホーム画面のアプリで保存場所が分かれるため、
+記録を始める前に追加してください。
+
+| ファイル | 役割 |
+| --- | --- |
+| `public/workout/manifest.webmanifest` | アプリ名・アイコン・起動 URL（`/workout`） |
+| `public/workout/icons/` | アイコン（`icon.svg` が元絵） |
+| `public/workout-sw.js` | オフライン用の Service Worker（`/workout` だけを受け持つ） |
+| `src/lib/workout/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定 |
+1枚の HTML にする場合は `npm run build:workout`（`dist-demo/workout.html`）。
+
 ## 使い方
 
 ```bash
@@ -53,7 +86,10 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/study.ts` | デッキの生成、シャッフル、集計 |
 | `src/lib/row-theme.ts` | 行ごとの配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
-| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
+| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト（`--app workout` で筋トレ版） |
+| `src/app/workout/` | おうち筋トレ20 のページ |
+| `src/components/workout/` | 今日 / トレーニング中 / 終了 / 記録 / 目標 の各画面 |
+| `src/lib/workout/` | 種目データ、20分の組み立て、カロリー推定、目標計算、保存 |
 
 ## 技術
 
