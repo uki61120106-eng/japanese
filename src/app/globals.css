@@ -55,6 +55,16 @@
   }
 }
 
+/*
+ * おうち筋トレ20（/workout）の差し色。かなフラッシュのピンクに代えてオレンジにする。
+ * 明暗どちらの背景でも読める値なので、ダークモード用の上書きは持たない。
+ */
+.theme-workout {
+  --primary: oklch(0.68 0.19 45);
+  --primary-foreground: oklch(0.99 0.01 45);
+  --ring: oklch(0.68 0.19 45);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

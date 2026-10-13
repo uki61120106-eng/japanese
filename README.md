@@ -10,6 +10,18 @@
 
 要件の詳細は [`docs/requirements.md`](docs/requirements.md) を参照してください。
 
+## おうち筋トレ20（`/workout`）
+
+同じアプリの中に、道具を使わない自宅トレーニングのアプリも入っています。
+
+- 毎日20分（ウォームアップ3分 + メイン14分 + ストレッチ3分）、曜日ごとにメニューが変わる
+- 初級 / 中級 / 上級、ジャンプしない静音モード、音声ガイド付きのタイマー
+- 体重を記録して「1年で −3kg」の目標ラインと比べられる
+- 記録は端末のブラウザに保存（通信なし）
+
+要件は [`docs/workout-requirements.md`](docs/workout-requirements.md)。
+1枚の HTML にする場合は `npm run build:workout`（`dist-demo/workout.html`）。
+
 ## 使い方
 
 ```bash
@@ -53,7 +65,10 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/study.ts` | デッキの生成、シャッフル、集計 |
 | `src/lib/row-theme.ts` | 行ごとの配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
-| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
+| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト（`--app workout` で筋トレ版） |
+| `src/app/workout/` | おうち筋トレ20 のページ |
+| `src/components/workout/` | 今日 / トレーニング中 / 終了 / 記録 / 目標 の各画面 |
+| `src/lib/workout/` | 種目データ、20分の組み立て、カロリー推定、目標計算、保存 |
 
 ## 技術
 
