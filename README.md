@@ -19,6 +19,9 @@
 - 週末の理解度チェック、科目・単元別の定着率、苦手克服
 - ミニ模試（30分）と本試験形式の模試（180分・中断再開可・合格基準で判定）
 
+claude.ai のアーティファクト用に1枚の HTML へまとめるには `npm run build:gyosei`（`dist-gyosei/index.html`）。
+アーティファクトでは記録が claude.ai の利用者専用領域に保存され、端末をまたいで引き継がれます。
+
 設計と収録内容は [`docs/gyosei-requirements.md`](docs/gyosei-requirements.md) を参照してください。
 
 ## 使い方

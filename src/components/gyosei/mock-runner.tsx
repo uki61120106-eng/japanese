@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight, Grid3x3, Pause, Timer } from "lucide-react"
 
 import { formatClock, SubjectBadge } from "@/components/gyosei/common"
+import { InlineConfirm } from "@/components/gyosei/inline-confirm"
 import { KijutsuAnswerBox } from "@/components/gyosei/kijutsu-practice"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -43,6 +44,7 @@ export function MockRunner({
   const [index, setIndex] = useState(0)
   const [elapsed, setElapsed] = useState(initial.elapsedSec)
   const [showNav, setShowNav] = useState(false)
+  const [confirming, setConfirming] = useState(false)
   const savedElapsed = useRef(initial.elapsedSec)
   const latest = useRef({ answers, elapsed })
 
@@ -90,6 +92,7 @@ export function MockRunner({
   const answeredCount = initial.questions.filter((q, i) =>
     isAnswered(q, answers[i])
   ).length
+  const unanswered = initial.questions.length - answeredCount
 
   return (
     <div className="flex flex-col gap-4">
@@ -231,31 +234,34 @@ export function MockRunner({
         ) : (
           <Button
             className="rounded-xl"
-            onClick={() => {
-              const rest = initial.questions.length - answeredCount
-              if (
-                rest === 0 ||
-                window.confirm(`未回答が${rest}問あります。提出しますか？`)
-              ) {
-                submit()
-              }
-            }}
+            onClick={() => (unanswered === 0 ? submit() : setConfirming(true))}
           >
             提出して採点
           </Button>
         )}
       </div>
-      {index < initial.questions.length - 1 && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground self-center"
-          onClick={() => {
-            if (window.confirm("ここで提出して採点しますか？")) submit()
-          }}
-        >
-          提出して採点する
-        </Button>
+      {confirming ? (
+        <InlineConfirm
+          message={
+            unanswered > 0
+              ? `未回答が${unanswered}問あります。提出して採点しますか？`
+              : "ここで提出して採点しますか？"
+          }
+          confirmLabel="提出する"
+          onConfirm={submit}
+          onCancel={() => setConfirming(false)}
+        />
+      ) : (
+        index < initial.questions.length - 1 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground self-center"
+            onClick={() => setConfirming(true)}
+          >
+            提出して採点する
+          </Button>
+        )
       )}
     </div>
   )

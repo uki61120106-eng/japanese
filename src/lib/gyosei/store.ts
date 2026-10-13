@@ -2,12 +2,14 @@
 
 import { useSyncExternalStore } from "react"
 
+import { personalDoc } from "@/lib/gyosei/claude-runtime"
 import type { MockDraft, MockRecord } from "@/lib/gyosei/mock"
 import type { CardState } from "@/lib/gyosei/srs"
 
 /**
- * 学習記録はこの端末のブラウザ（localStorage）にだけ保存する。
- * 端末の変更やブラウザのデータ削除に備えて、設定画面から書き出し・読み込みができる。
+ * 学習記録はブラウザ（localStorage）に保存する。claude.ai のアーティファクトとして
+ * 動くときは、利用者専用のドキュメント（db 機能）にも保存し、端末をまたいで引き継ぐ。
+ * どちらの場合も、設定画面から書き出し・読み込みができる。
  */
 const STORAGE_KEY = "gyosei-study-v1"
 
@@ -65,6 +67,12 @@ export function emptyState(): AppState {
 let cache: AppState | null = null
 const listeners = new Set<() => void>()
 
+/** 保存先。"local" はこの端末のブラウザのみ、"cloud" は claude.ai にも保存 */
+export type SyncStatus = "connecting" | "local" | "cloud" | "error"
+let syncStatus: SyncStatus = "local"
+type Remote = Awaited<ReturnType<typeof personalDoc>>
+let remote: Remote = null
+
 function isAppState(value: unknown): value is AppState {
   return (
     typeof value === "object" &&
@@ -87,9 +95,14 @@ function load(): AppState {
   return emptyState()
 }
 
-function getSnapshot(): AppState {
+function getState(): AppState {
   if (!cache) cache = load()
   return cache
+}
+
+/** クラウドの記録を読み込むまでは null（読み込み中）を返す */
+function getSnapshot(): AppState | null {
+  return syncStatus === "connecting" ? null : getState()
 }
 
 function getServerSnapshot(): AppState | null {
@@ -101,14 +114,107 @@ function subscribe(listener: () => void) {
   return () => listeners.delete(listener)
 }
 
-export function updateState(updater: (state: AppState) => AppState) {
-  cache = updater(getSnapshot())
+function notify() {
+  listeners.forEach((listener) => listener())
+}
+
+function saveLocal(state: AppState) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cache))
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch {
     // 保存できなくても画面上の学習は続けられるようにする
   }
-  listeners.forEach((listener) => listener())
+}
+
+export function updateState(updater: (state: AppState) => AppState) {
+  cache = updater(getState())
+  saveLocal(cache)
+  scheduleRemoteSave()
+  notify()
+}
+
+// クラウドへの保存は、連続した操作を1回にまとめ、1件ずつ順番に書き込む
+const REMOTE_DEBOUNCE_MS = 1500
+let saveTimer: number | null = null
+let saving = false
+let dirty = false
+
+function scheduleRemoteSave() {
+  if (!remote) return
+  dirty = true
+  if (saveTimer !== null) window.clearTimeout(saveTimer)
+  saveTimer = window.setTimeout(() => {
+    saveTimer = null
+    void flushRemote()
+  }, REMOTE_DEBOUNCE_MS)
+}
+
+async function flushRemote() {
+  if (!remote || saving || !dirty) return
+  saving = true
+  dirty = false
+  const state = getState()
+  try {
+    await remote.set({ json: JSON.stringify(state), savedAt: Date.now() })
+    if (syncStatus !== "cloud") {
+      syncStatus = "cloud"
+      notify()
+    }
+  } catch {
+    dirty = true
+    syncStatus = "error"
+    notify()
+  } finally {
+    saving = false
+  }
+  if (dirty) scheduleRemoteSave()
+}
+
+/**
+ * アーティファクトとして動くときに呼ぶ。クラウドに記録があればそれを使い、
+ * なければこの端末の記録をクラウドへ上げる。使えなければ端末保存のまま続ける。
+ */
+export async function connectRemote() {
+  syncStatus = "connecting"
+  notify()
+  const doc = await personalDoc()
+  if (!doc) {
+    syncStatus = "local"
+    notify()
+    return
+  }
+  try {
+    const snap = await doc.get()
+    const json = snap.exists ? snap.data()?.json : undefined
+    const parsed: unknown = typeof json === "string" ? JSON.parse(json) : null
+    remote = doc
+    if (isAppState(parsed)) {
+      cache = { ...emptyState(), ...parsed }
+      saveLocal(cache)
+      syncStatus = "cloud"
+    } else {
+      syncStatus = "cloud"
+      if (getState().settings) {
+        dirty = true
+        void flushRemote()
+      }
+    }
+  } catch {
+    syncStatus = "error"
+  }
+  window.addEventListener("pagehide", () => void flushRemote())
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") void flushRemote()
+  })
+  notify()
+}
+
+export function useSyncStatus(): SyncStatus {
+  return useSyncExternalStore(
+    subscribe,
+    () => syncStatus,
+    () => "local"
+  )
 }
 
 /** サーバー描画中は null。ブラウザでは保存済みの状態を返す。 */
@@ -118,7 +224,7 @@ export function useAppState(): AppState | null {
 
 export function exportState(today: string): string {
   updateState((state) => ({ ...state, lastExport: today }))
-  return JSON.stringify(getSnapshot(), null, 2)
+  return JSON.stringify(getState(), null, 2)
 }
 
 export function importState(json: string): boolean {

@@ -4,10 +4,12 @@ import { useRef, useState } from "react"
 import { Download, GraduationCap, Trash2, Upload } from "lucide-react"
 
 import { ScreenTitle } from "@/components/gyosei/common"
+import { InlineConfirm } from "@/components/gyosei/inline-confirm"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { saveSettings } from "@/lib/gyosei/actions"
+import { saveTextFile } from "@/lib/gyosei/claude-runtime"
 import { STATEMENTS } from "@/lib/gyosei/content"
 import { diffDays, formatJP, todayISO } from "@/lib/gyosei/dates"
 import { defaultExamDate, examDateOf } from "@/lib/gyosei/exam"
@@ -15,6 +17,7 @@ import {
   exportState,
   importState,
   resetState,
+  useSyncStatus,
   type Settings,
 } from "@/lib/gyosei/store"
 
@@ -180,7 +183,7 @@ export function SetupScreen({ today }: { today: string }) {
       </header>
       <SettingsForm initial={DEFAULT_SETTINGS(today)} submitLabel="この計画ではじめる" />
       <p className="text-muted-foreground text-xs leading-relaxed">
-        収録問題：一問一答 {STATEMENTS.length}問・記述式・多肢選択。学習記録はこの端末のブラウザにだけ保存されます。
+        収録問題：一問一答 {STATEMENTS.length}問・記述式・多肢選択。学習記録はあなた専用で、他の人には見えません。
       </p>
     </div>
   )
@@ -196,16 +199,17 @@ export function SettingsScreen({
   const fileRef = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState<string | null>(null)
 
-  function download() {
-    const blob = new Blob([exportState(todayISO())], {
-      type: "application/json",
-    })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `gyosei-study-${todayISO()}.json`
-    link.click()
-    URL.revokeObjectURL(url)
+  const syncStatus = useSyncStatus()
+  const [confirm, setConfirm] = useState<
+    { kind: "import"; text: string } | { kind: "reset" } | null
+  >(null)
+
+  async function download() {
+    const saved = await saveTextFile(
+      `gyosei-study-${todayISO()}.json`,
+      exportState(todayISO())
+    )
+    setMessage(saved ? "書き出しました" : "書き出せませんでした")
   }
 
   return (
@@ -224,7 +228,11 @@ export function SettingsScreen({
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-bold">学習記録のバックアップ</h2>
         <p className="text-muted-foreground text-xs leading-relaxed">
-          記録はこのブラウザにだけ保存されています。機種変更やブラウザのデータ削除に備えて、月に1回は書き出しておくと安全です。
+          {syncStatus === "cloud"
+            ? "記録は claude.ai のあなた専用の領域に自動保存され、別の端末で開いても続きから学習できます。念のため月に1回は書き出しておくと安全です。"
+            : syncStatus === "error"
+              ? "claude.ai への保存に失敗しました。通信を確認してください。記録はこの端末には残っています。"
+              : "記録はこのブラウザにだけ保存されています。機種変更やブラウザのデータ削除に備えて、月に1回は書き出しておくと安全です。"}
         </p>
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" className="rounded-xl" onClick={download}>
@@ -249,31 +257,51 @@ export function SettingsScreen({
             const file = event.target.files?.[0]
             event.target.value = ""
             if (!file) return
-            if (!window.confirm("今の記録を、読み込むファイルの内容で置き換えます。よろしいですか？")) return
-            setMessage(
-              importState(await file.text())
-                ? "読み込みました"
-                : "読み込めませんでした（形式が違います）"
-            )
+            setConfirm({ kind: "import", text: await file.text() })
           }}
         />
+        {confirm?.kind === "import" && (
+          <InlineConfirm
+            message="今の記録を、読み込むファイルの内容で置き換えます。よろしいですか？"
+            confirmLabel="置き換える"
+            destructive
+            onCancel={() => setConfirm(null)}
+            onConfirm={() => {
+              setMessage(
+                importState(confirm.text)
+                  ? "読み込みました"
+                  : "読み込めませんでした（形式が違います）"
+              )
+              setConfirm(null)
+            }}
+          />
+        )}
         {message && <p className="text-sm font-bold">{message}</p>}
       </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-bold">リセット</h2>
-        <Button
-          variant="outline"
-          className="text-destructive rounded-xl"
-          onClick={() => {
-            if (window.confirm("すべての学習記録と設定を消去します。元に戻せません。よろしいですか？")) {
+        {confirm?.kind === "reset" ? (
+          <InlineConfirm
+            message="すべての学習記録と設定を消去します。元に戻せません。よろしいですか？"
+            confirmLabel="消去する"
+            destructive
+            onCancel={() => setConfirm(null)}
+            onConfirm={() => {
+              setConfirm(null)
               resetState()
-            }
-          }}
-        >
-          <Trash2 />
-          すべての記録を消去
-        </Button>
+            }}
+          />
+        ) : (
+          <Button
+            variant="outline"
+            className="text-destructive rounded-xl"
+            onClick={() => setConfirm({ kind: "reset" })}
+          >
+            <Trash2 />
+            すべての記録を消去
+          </Button>
+        )}
       </section>
     </div>
   )

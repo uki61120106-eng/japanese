@@ -1,6 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/*
+ * dark: は OS の設定に加え、埋め込み先が付ける data-theme 属性にも従わせる
+ * （claude.ai のアーティファクトはビューアーのテーマを data-theme で渡す）。
+ */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+  &:where(:root[data-theme="dark"] *) {
+    @slot;
+  }
+}
+
 :root {
   color-scheme: light;
 
