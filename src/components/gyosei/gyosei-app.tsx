@@ -146,6 +146,7 @@ export function GyoseiApp() {
           onStartCheck={() => startSession(buildCheckSession(state, plan, info))}
           onOpenMock={() => setView({ name: "mock" })}
           onResumeMock={() => setView({ name: "mockRun" })}
+          onOpenSettings={() => setView({ name: "settings" })}
         />
       )
       break

@@ -45,6 +45,8 @@ export type AppState = {
   /** 記述式の自己採点（直近の点数） */
   kijutsu: Record<string, { last: number; best: number; date: string }>
   draft: MockDraft | null
+  /** 最後に記録を書き出した日 */
+  lastExport?: string
 }
 
 export function emptyState(): AppState {
@@ -114,7 +116,8 @@ export function useAppState(): AppState | null {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 }
 
-export function exportState(): string {
+export function exportState(today: string): string {
+  updateState((state) => ({ ...state, lastExport: today }))
   return JSON.stringify(getSnapshot(), null, 2)
 }
 

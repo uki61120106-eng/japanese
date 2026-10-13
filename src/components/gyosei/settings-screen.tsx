@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { saveSettings } from "@/lib/gyosei/actions"
 import { STATEMENTS } from "@/lib/gyosei/content"
-import { diffDays, formatJP } from "@/lib/gyosei/dates"
+import { diffDays, formatJP, todayISO } from "@/lib/gyosei/dates"
 import { defaultExamDate, examDateOf } from "@/lib/gyosei/exam"
 import {
   exportState,
@@ -197,11 +197,13 @@ export function SettingsScreen({
   const [message, setMessage] = useState<string | null>(null)
 
   function download() {
-    const blob = new Blob([exportState()], { type: "application/json" })
+    const blob = new Blob([exportState(todayISO())], {
+      type: "application/json",
+    })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
     link.href = url
-    link.download = `gyosei-study-${new Date().toISOString().slice(0, 10)}.json`
+    link.download = `gyosei-study-${todayISO()}.json`
     link.click()
     URL.revokeObjectURL(url)
   }

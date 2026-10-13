@@ -1,0 +1,16 @@
+{
+  "name": "行政書士 1年合格プラン",
+  "short_name": "行政書士",
+  "description": "1日30分で行政書士試験を目指す学習アプリ",
+  "lang": "ja",
+  "start_url": "/gyosei",
+  "scope": "/gyosei",
+  "display": "standalone",
+  "background_color": "#fff7f5",
+  "theme_color": "#e11d48",
+  "icons": [
+    { "src": "/gyosei/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/gyosei/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/gyosei/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

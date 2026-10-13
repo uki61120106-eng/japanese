@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { topicName } from "@/lib/gyosei/content"
-import { addDays, formatJP } from "@/lib/gyosei/dates"
+import { addDays, diffDays, formatJP } from "@/lib/gyosei/dates"
 import type { DayInfo, Plan } from "@/lib/gyosei/plan"
 import {
   overallMastery,
@@ -42,6 +42,7 @@ export function Dashboard({
   onStartCheck,
   onOpenMock,
   onResumeMock,
+  onOpenSettings,
 }: {
   state: AppState
   plan: Plan
@@ -52,6 +53,7 @@ export function Dashboard({
   onStartCheck: () => void
   onOpenMock: () => void
   onResumeMock: () => void
+  onOpenSettings: () => void
 }) {
   const settings = state.settings!
   const todayLog = state.days[today]
@@ -72,6 +74,11 @@ export function Dashboard({
   const checkDone = state.checks.some((check) => check.week === info.week)
   const mastery = overallMastery(state)
   const lastMock = state.mocks[state.mocks.length - 1]
+  // 記録はこの端末にしかないので、学習を始めて30日以上書き出していなければ促す
+  const studyDays = Object.keys(state.days).sort()
+  const needsBackup =
+    studyDays.length > 0 &&
+    diffDays(state.lastExport ?? studyDays[0], today) >= 30
   const studiedSeconds = Object.values(state.days).reduce(
     (sum, day) => sum + day.seconds,
     0
@@ -106,6 +113,14 @@ export function Dashboard({
         <Notice>
           設定した試験日を過ぎました。次の試験を目指す場合は、設定で開始日と試験日を更新してください。
         </Notice>
+      )}
+
+      {needsBackup && (
+        <button type="button" onClick={onOpenSettings} className="text-left">
+          <Notice>
+            学習記録のバックアップから30日以上たちました。設定の「書き出す」で保存しておきましょう（タップで設定へ）。
+          </Notice>
+        </button>
       )}
 
       {state.draft && (
