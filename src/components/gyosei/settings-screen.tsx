@@ -45,7 +45,7 @@ function SettingsForm({
               const startDate = event.target.value
               if (startDate) setForm({ ...form, startDate })
             }}
-            className="bg-background w-full rounded-xl border px-3 py-2"
+            className="bg-background h-11 w-full rounded-xl border px-3 text-base"
           />
         </Field>
         <Field
@@ -60,7 +60,7 @@ function SettingsForm({
                 const examDate = event.target.value
                 if (examDate) setForm({ ...form, examDate })
               }}
-              className="bg-background w-full rounded-xl border px-3 py-2"
+              className="bg-background h-11 w-full rounded-xl border px-3 text-base"
             />
             <Button
               variant="outline"
@@ -149,7 +149,7 @@ function NumberSelect({
     <select
       value={value}
       onChange={(event) => onChange(Number(event.target.value))}
-      className="bg-background w-full rounded-xl border px-3 py-2"
+      className="bg-background h-11 w-full rounded-xl border px-3 text-base"
     >
       {options.map((option) => (
         <option key={option} value={option}>

@@ -105,5 +105,17 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-app-sans);
+    /* 埋め込み先が本文を14pxにしても、入力欄で iOS が拡大しない16pxを保つ */
+    font-size: 1rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* ダブルタップでの拡大を防ぎ、タップの反応を速くする */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="checkbox"] {
+    touch-action: manipulation;
   }
 }
