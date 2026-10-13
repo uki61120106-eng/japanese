@@ -22,6 +22,7 @@
 - 確認: 解説の下に根拠条文へのリンク、「条文で確認した」「誤りを報告」ボタン。報告内容はコピーして修正依頼に使える
 
 共有用の1枚 HTML は `npm run build:demo:sharoushi`（`dist-demo/sharoushi.html`）で作れます。
+claude.ai のアーティファクトとして公開すると、学習記録が本人専用の保存領域に同期され、スマホと PC で共有できます（`capabilities: {db: {}, user: {}}` を宣言して公開）。
 学習記録はブラウザの localStorage に保存されます。要件と未対応事項は
 [`docs/sharoushi-requirements.md`](docs/sharoushi-requirements.md) を参照してください。
 
@@ -75,7 +76,8 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/sharoushi/plan.ts` | 年間計画と毎日のメニューの組み立て |
 | `src/lib/sharoushi/srs.ts` | 間隔反復の計算 |
 | `src/lib/sharoushi/mock.ts` | 模試の生成と採点 |
-| `src/lib/sharoushi/store.ts` | 学習記録の保存（localStorage） |
+| `src/lib/sharoushi/store.ts` | 学習記録の保存（localStorage）と端末間の同期 |
+| `src/lib/sharoushi/sync-merge.ts` | 端末ごとの記録の統合ルール |
 | `src/lib/sharoushi/law-links.ts` | 根拠欄から条文の検索リンクを作る |
 | `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
 

@@ -14,6 +14,7 @@ import {
 } from "@/components/sharoushi/quiz-session"
 import { ReviewTab } from "@/components/sharoushi/review-tab"
 import { SessionResultScreen } from "@/components/sharoushi/session-result"
+import { SyncBadge } from "@/components/sharoushi/sync-badge"
 import { TodayTab } from "@/components/sharoushi/today-tab"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { todayKey } from "@/lib/sharoushi/dates"
@@ -95,6 +96,7 @@ export default function SharoushiPage() {
             <p className="text-muted-foreground text-xs">
               一問一答と復習、模試で1年後の合格へ
             </p>
+            <SyncBadge />
           </header>
 
           <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)}>

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { SyncBadge } from "@/components/sharoushi/sync-badge"
 import { formatDate, type DateKey } from "@/lib/sharoushi/dates"
 import { PHASE_LABEL, type PlanBlock } from "@/lib/sharoushi/plan"
 import { LAW_AS_OF, QUESTIONS } from "@/lib/sharoushi/questions"
@@ -69,6 +70,18 @@ export function PlanTab({ data, today, plan }: PlanTabProps) {
               )
             })}
           </ol>
+        </CardContent>
+      </Card>
+
+      <Card className="gap-3 rounded-2xl py-4">
+        <CardContent className="flex flex-col gap-3">
+          <h2 className="text-sm font-bold">スマホで使う</h2>
+          <SyncBadge detailed />
+          <ul className="text-muted-foreground list-disc pl-5 text-xs leading-relaxed">
+            <li>このページを claude.ai で開いている間は、学習記録が自分だけの保存領域に同期され、スマホとPCで同じ記録を続きから使えます</li>
+            <li>スマホではこのページのリンクをブラウザで開き、共有メニューの「ホーム画面に追加」でアプリのように起動できます</li>
+            <li>通信が切れている間に解いた分も端末に残り、次に同期できたときに統合されます</li>
+          </ul>
         </CardContent>
       </Card>
 
