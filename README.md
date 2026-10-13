@@ -68,7 +68,8 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/components/ui/` | shadcn/ui のコンポーネント |
 | `src/app/sharoushi/page.tsx` | 社労士アプリの画面の出し分け |
 | `src/components/sharoushi/` | 社労士アプリの各タブ・出題・模試の画面 |
-| `src/lib/sharoushi/questions.ts` | 社労士の問題データ（一問一答） |
+| `src/lib/sharoushi/questions/` | 社労士の問題データ（一問一答、科目ごとのファイル） |
+| `scripts/check-questions.mjs` | 問題データの検査（`npm run check:questions`） |
 | `src/lib/sharoushi/plan.ts` | 年間計画と毎日のメニューの組み立て |
 | `src/lib/sharoushi/srs.ts` | 間隔反復の計算 |
 | `src/lib/sharoushi/mock.ts` | 模試の生成と採点 |
