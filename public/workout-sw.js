@@ -6,7 +6,7 @@
  *   /_next/static/ など : ファイル名にハッシュが付いて中身が変わらないので、保存を優先
  *   Google Fonts        : 保存を返しつつ裏で更新する
  */
-const CACHE = "ie-kintore-v1"
+const CACHE = "ie-kintore-v2"
 const PAGE = "/workout"
 const PRECACHE = [
   PAGE,
@@ -93,4 +93,15 @@ self.addEventListener("fetch", (event) => {
   if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com") {
     event.respondWith(staleWhileRevalidate(request))
   }
+})
+
+// リマインダーの通知を押したら、開いているアプリに戻る（なければ開く）
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      const client = clients.find((c) => new URL(c.url).pathname.startsWith(PAGE))
+      return client ? client.focus() : self.clients.openWindow(PAGE)
+    })
+  )
 })

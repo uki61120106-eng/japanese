@@ -4,6 +4,7 @@
  */
 import { useSyncExternalStore } from "react"
 
+import type { DietId } from "@/lib/workout/diet"
 import type { Level } from "@/lib/workout/plan"
 
 export type Settings = {
@@ -14,6 +15,12 @@ export type Settings = {
   voice: boolean
   /** 「ホーム画面に追加」の案内を閉じた */
   hideInstallHint: boolean
+  /** 毎日のリマインダーの時刻（HH:MM） */
+  reminderTime: string
+  /** アプリを開いている間の通知を使う */
+  reminderNotify: boolean
+  /** 最後に通知した日（同じ日に2回知らせない） */
+  lastNotified: string | null
 }
 
 export type Goal = {
@@ -42,31 +49,64 @@ export type WorkoutData = {
   goal: Goal | null
   sessions: SessionLog[]
   weights: WeightLog[]
+  /** 日付（YYYY-MM-DD）ごとの食事の工夫 */
+  diet: Record<string, DietId[]>
 }
 
 const KEY = "ie-kintore:v1"
 
 const EMPTY: WorkoutData = {
   version: 1,
-  settings: { level: "easy", quiet: true, voice: true, hideInstallHint: false },
+  settings: {
+    level: "easy",
+    quiet: true,
+    voice: true,
+    hideInstallHint: false,
+    reminderTime: "19:00",
+    reminderNotify: false,
+    lastNotified: null,
+  },
   goal: null,
   sessions: [],
   weights: [],
+  diet: {},
 }
 
 let cache: WorkoutData | null = null
 const listeners = new Set<() => void>()
 
+/**
+ * 保存されていた値やバックアップから読み込んだ値を、今の形にそろえる。
+ * 形がおかしいときは null を返す（バックアップの読み込みで使う）。
+ */
+export function normalizeData(value: unknown): WorkoutData | null {
+  if (!value || typeof value !== "object") return null
+  const parsed = value as Partial<WorkoutData>
+  if (parsed.version !== undefined && parsed.version !== 1) return null
+  if (parsed.sessions !== undefined && !Array.isArray(parsed.sessions)) return null
+  if (parsed.weights !== undefined && !Array.isArray(parsed.weights)) return null
+  if (
+    parsed.diet !== undefined &&
+    (typeof parsed.diet !== "object" || parsed.diet === null || Array.isArray(parsed.diet))
+  ) {
+    return null
+  }
+  return {
+    ...EMPTY,
+    ...parsed,
+    version: 1,
+    settings: { ...EMPTY.settings, ...parsed.settings },
+    sessions: parsed.sessions ?? [],
+    weights: parsed.weights ?? [],
+    diet: parsed.diet ?? {},
+  }
+}
+
 function read(): WorkoutData {
   try {
     const raw = window.localStorage.getItem(KEY)
     if (!raw) return EMPTY
-    const parsed = JSON.parse(raw) as Partial<WorkoutData>
-    return {
-      ...EMPTY,
-      ...parsed,
-      settings: { ...EMPTY.settings, ...parsed.settings },
-    }
+    return normalizeData(JSON.parse(raw)) ?? EMPTY
   } catch {
     // プライベートモードなどで読めないときは空の状態で動かす
     return EMPTY

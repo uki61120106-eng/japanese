@@ -3,6 +3,8 @@
 import { Check, Flame, Play, Volume2, VolumeX } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { DietCard } from "@/components/workout/diet-card"
+import { ExerciseFigure } from "@/components/workout/exercise-figure"
 import { InstallHint } from "@/components/workout/install-hint"
 import { Switch } from "@/components/ui/switch"
 import { resolveExercise } from "@/lib/workout/exercises"
@@ -23,6 +25,7 @@ import {
   estimateKcal,
   type Level,
 } from "@/lib/workout/plan"
+import { isPastReminder } from "@/lib/workout/reminder"
 import { updateWorkoutData, type WorkoutData } from "@/lib/workout/storage"
 import { cn } from "@/lib/utils"
 
@@ -41,6 +44,7 @@ export function TodayTab({ data, today, weightKg, onStart }: TodayTabProps) {
   const byDate = sessionsByDate(data.sessions)
   const doneToday = isDayDone(byDate.get(dateKey(today)))
   const streak = currentStreak(data.sessions, today)
+  const overdue = !doneToday && isPastReminder(today, settings.reminderTime)
 
   // 今週（月曜はじまり）
   const monday = addDays(today, -((today.getDay() + 6) % 7))
@@ -96,6 +100,11 @@ export function TodayTab({ data, today, weightKg, onStart }: TodayTabProps) {
                 <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-700 tabular-nums dark:bg-orange-950/60 dark:text-orange-200">
                   {index + 1}
                 </span>
+                <ExerciseFigure
+                  id={exercise.id}
+                  still
+                  className="bg-muted/60 size-11 shrink-0 rounded-xl"
+                />
                 <span className="min-w-0 flex-1 font-bold">{exercise.name}</span>
                 <span className="text-muted-foreground shrink-0 text-xs">{exercise.target}</span>
               </li>
@@ -171,6 +180,11 @@ export function TodayTab({ data, today, weightKg, onStart }: TodayTabProps) {
           </label>
         </div>
 
+        {overdue && (
+          <p className="rounded-xl bg-amber-100 px-3 py-2 text-sm font-bold text-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
+            {settings.reminderTime} を過ぎました。今日の20分がまだです
+          </p>
+        )}
         <Button
           size="xl"
           onClick={onStart}
@@ -180,6 +194,8 @@ export function TodayTab({ data, today, weightKg, onStart }: TodayTabProps) {
           {doneToday ? "もう一度やる" : "20分スタート"}
         </Button>
       </section>
+
+      <DietCard data={data} today={today} />
 
       <InstallHint hidden={settings.hideInstallHint} />
 

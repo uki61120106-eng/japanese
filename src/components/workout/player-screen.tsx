@@ -5,6 +5,7 @@ import { Pause, Play, SkipBack, SkipForward } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { ExerciseFigure } from "@/components/workout/exercise-figure"
 import { ROUNDS, totalSeconds, type Segment } from "@/lib/workout/plan"
 import { beep, speak, stopSpeaking } from "@/lib/workout/sound"
 import { KIND_THEME } from "@/lib/workout/theme"
@@ -277,7 +278,7 @@ export function PlayerScreen({
         </div>
       </header>
 
-      <div className="relative mx-auto aspect-square w-full max-w-64">
+      <div className="relative mx-auto aspect-square w-full max-w-56">
         <svg viewBox="0 0 200 200" className="size-full -rotate-90">
           <circle
             cx="100"
@@ -317,13 +318,20 @@ export function PlayerScreen({
               次の種目
             </span>
           )}
-          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h2 className="text-2xl font-extrabold text-balance">
-              {shown.exercise.name}
-            </h2>
-            <span className="text-muted-foreground text-sm">
-              {shown.exercise.target}
-            </span>
+          <div className="flex items-center gap-4">
+            <ExerciseFigure
+              id={shown.exercise.id}
+              accentClassName={theme.ring}
+              className="bg-muted/60 size-28 shrink-0 rounded-2xl"
+            />
+            <div className="flex min-w-0 flex-col gap-1">
+              <h2 className="text-2xl font-extrabold text-balance">
+                {shown.exercise.name}
+              </h2>
+              <span className="text-muted-foreground text-sm">
+                {shown.exercise.target}
+              </span>
+            </div>
           </div>
           <ul className="flex flex-col gap-1.5">
             {shown.exercise.cues.map((cue) => (

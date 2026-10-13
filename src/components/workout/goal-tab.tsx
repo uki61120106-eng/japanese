@@ -22,6 +22,7 @@ import {
   sortedWeights,
   totalKcal,
 } from "@/lib/workout/goal"
+import { totalDietKcal } from "@/lib/workout/diet"
 import { updateWorkoutData, type WorkoutData } from "@/lib/workout/storage"
 import { cn } from "@/lib/utils"
 
@@ -110,6 +111,7 @@ function GoalProgress({ data, today }: { data: WorkoutData; today: Date }) {
   const since = dateKey(addDays(today, -27))
   const windowDays = Math.min(28, elapsed + 1)
   const avgKcal = totalKcal(data.sessions, since) / windowDays
+  const avgDiet = totalDietKcal(data.diet, since) / windowDays
   const needKcal = dailyKcalTarget(goal)
 
   const recentWeights = sortedWeights(data.weights).reverse().slice(0, 8)
@@ -201,11 +203,16 @@ function GoalProgress({ data, today }: { data: WorkoutData; today: Date }) {
             <dt className="text-muted-foreground">あなたの運動の平均（直近4週・推定）</dt>
             <dd className="shrink-0 font-bold tabular-nums">約 {Math.round(avgKcal)} kcal/日</dd>
           </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-muted-foreground">食事の工夫の平均（直近4週・目安）</dt>
+            <dd className="shrink-0 font-bold tabular-nums">約 {Math.round(avgDiet)} kcal/日</dd>
+          </div>
         </dl>
         <p className="text-muted-foreground text-xs">
           消費カロリーは種目の強さと体重から出した推定値です。実際は個人差が大きく、運動した日は
           食欲が増えて食べる量が増えることもあります。数字が足りていても体重が減らないときは、
-          間食や飲み物を1日 {Math.max(Math.round(needKcal - avgKcal), 50)} kcal ほど減らすと届きやすくなります。
+          間食や飲み物を1日 {Math.max(Math.round(needKcal - avgKcal - avgDiet), 50)} kcal ほど減らすと届きやすくなります。
+          「今日」タブの「食事の工夫」で記録できます。
         </p>
       </section>
 

@@ -1,15 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CalendarDays, Dumbbell, Target } from "lucide-react"
+import { CalendarDays, Dumbbell, Settings, Target } from "lucide-react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FinishScreen } from "@/components/workout/finish-screen"
 import { GoalTab } from "@/components/workout/goal-tab"
 import { LogTab } from "@/components/workout/log-tab"
 import { PlayerScreen } from "@/components/workout/player-screen"
+import { SettingsTab } from "@/components/workout/settings-tab"
 import { TodayTab } from "@/components/workout/today-tab"
-import { currentStreak, dateKey, latestWeight } from "@/lib/workout/goal"
+import { currentStreak, dateKey, isDayDone, latestWeight } from "@/lib/workout/goal"
 import {
   buildSession,
   dayPlanFor,
@@ -18,6 +19,7 @@ import {
   type Segment,
 } from "@/lib/workout/plan"
 import { registerServiceWorker } from "@/lib/workout/pwa"
+import { isPastReminder, showReminderNotification } from "@/lib/workout/reminder"
 import { unlockAudio } from "@/lib/workout/sound"
 import {
   updateWorkoutData,
@@ -37,7 +39,7 @@ type Screen =
   | { name: "player"; segments: Segment[]; startedAt: number }
   | { name: "finish"; session: SessionLog }
 
-type Tab = "today" | "log" | "goal"
+type Tab = "today" | "log" | "goal" | "settings"
 
 export function WorkoutApp() {
   const data = useWorkoutData()
@@ -48,6 +50,31 @@ export function WorkoutApp() {
   useEffect(() => {
     registerServiceWorker()
   }, [])
+
+  // アプリを開いている間は1分ごとに確かめ、時刻を過ぎてまだなら1日1回だけ通知する
+  const notify = data?.settings.reminderNotify ?? false
+  const reminderTime = data?.settings.reminderTime ?? "19:00"
+  useEffect(() => {
+    if (!notify) return
+    const check = () => {
+      const now = new Date()
+      const key = dateKey(now)
+      const current = data
+      if (!current || current.settings.lastNotified === key) return
+      if (!isPastReminder(now, reminderTime)) return
+      if (isDayDone(current.sessions.filter((s) => s.date === key))) return
+      void showReminderNotification().then((shown) => {
+        if (!shown) return
+        updateWorkoutData((latest) => ({
+          ...latest,
+          settings: { ...latest.settings, lastNotified: key },
+        }))
+      })
+    }
+    check()
+    const id = window.setInterval(check, 60_000)
+    return () => window.clearInterval(id)
+  }, [notify, reminderTime, data])
 
   if (!data) {
     // 端末の記録を読み込むまでの一瞬だけ表示される
@@ -148,6 +175,10 @@ export function WorkoutApp() {
             <Target />
             目標
           </TabsTrigger>
+          <TabsTrigger value="settings" className="rounded-xl">
+            <Settings />
+            設定
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="today">
           <TodayTab data={data} today={today} weightKg={weightKg} onStart={start} />
@@ -157,6 +188,9 @@ export function WorkoutApp() {
         </TabsContent>
         <TabsContent value="goal">
           <GoalTab data={data} today={today} />
+        </TabsContent>
+        <TabsContent value="settings">
+          <SettingsTab data={data} today={today} />
         </TabsContent>
       </Tabs>
     </div>
