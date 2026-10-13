@@ -27,6 +27,9 @@ import {
 import type { Level, Part5Category, PhraseCategory } from "@/lib/toeic/types"
 import { cn } from "@/lib/utils"
 
+/** 1枚 HTML にはこのページしか入らないので、他ページへの導線は隠す */
+const SINGLE_FILE_PAGE = process.env.NEXT_PUBLIC_SINGLE_FILE_DEMO === "1"
+
 export type StudyMode = "review" | "phrase" | "part5" | "part7"
 
 export const PART5_LENGTHS = [10, 20, 30]
@@ -453,13 +456,17 @@ export function ToeicHomeScreen({
       </Card>
 
       <footer className="flex items-center justify-between gap-3 pb-4">
-        <Link
-          href="/"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs underline-offset-4 hover:underline"
-        >
-          <BookOpen className="size-3.5" />
-          かなフラッシュへ
-        </Link>
+        {SINGLE_FILE_PAGE ? (
+          <span />
+        ) : (
+          <Link
+            href="/"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs underline-offset-4 hover:underline"
+          >
+            <BookOpen className="size-3.5" />
+            かなフラッシュへ
+          </Link>
+        )}
         <Button
           variant="ghost"
           size="sm"
