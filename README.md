@@ -19,6 +19,7 @@
 - 振り返り: 間隔反復（1→3→7→14→30→60日）の復習、前回間違えた問題、苦手な問題、科目別の進み具合
 - 模試: 7科目区分×2問のミニ模試（択一式・制限時間つき）と受験記録
 - 計画: インプット期 → アウトプット期 → 直前期 の年間計画、試験日・目標時間の設定
+- 確認: 解説の下に根拠条文へのリンク、「条文で確認した」「誤りを報告」ボタン。報告内容はコピーして修正依頼に使える
 
 学習記録はブラウザの localStorage に保存されます。要件と未対応事項は
 [`docs/sharoushi-requirements.md`](docs/sharoushi-requirements.md) を参照してください。
@@ -74,6 +75,7 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/sharoushi/srs.ts` | 間隔反復の計算 |
 | `src/lib/sharoushi/mock.ts` | 模試の生成と採点 |
 | `src/lib/sharoushi/store.ts` | 学習記録の保存（localStorage） |
+| `src/lib/sharoushi/law-links.ts` | 根拠欄から条文の検索リンクを作る |
 | `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
 
 ## 技術

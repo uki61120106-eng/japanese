@@ -20,6 +20,19 @@ export type MockRecord = {
   byGroup: Partial<Record<ExamGroupId, { correct: number; total: number }>>
 }
 
+/**
+ * 問題の内容を自分で確かめた結果。
+ * - ok: 条文などで正しいと確認した
+ * - flag: 内容が怪しい・誤りがある（あとで問題データを直す）
+ */
+export type CheckStatus = "ok" | "flag"
+
+export type QuestionCheck = {
+  status: CheckStatus
+  date: DateKey
+  note?: string
+}
+
 export type StudyData = {
   version: 1
   examDate: DateKey
@@ -29,6 +42,7 @@ export type StudyData = {
   cards: Record<string, CardState>
   log: Record<DateKey, DayLog>
   mocks: MockRecord[]
+  checks: Record<string, QuestionCheck>
 }
 
 /**
@@ -47,6 +61,7 @@ function initialData(): StudyData {
     cards: {},
     log: {},
     mocks: [],
+    checks: {},
   }
 }
 
@@ -158,4 +173,21 @@ export function recordMock(record: MockRecord) {
 
 export function resetStudyData() {
   write(initialData())
+}
+
+/** 同じ状態をもう一度押したら「未確認」に戻す */
+export function setQuestionCheck(
+  questionId: string,
+  status: CheckStatus,
+  note?: string
+) {
+  updateStudyData((data) => {
+    const checks = { ...data.checks }
+    if (checks[questionId]?.status === status && note === undefined) {
+      delete checks[questionId]
+    } else {
+      checks[questionId] = { status, date: todayKey(), ...(note ? { note } : {}) }
+    }
+    return { ...data, checks }
+  })
 }

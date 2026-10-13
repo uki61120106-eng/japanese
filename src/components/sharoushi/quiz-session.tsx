@@ -7,8 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { QuestionCheck } from "@/components/sharoushi/question-check"
 import type { Question } from "@/lib/sharoushi/questions"
-import { addStudySeconds, recordAnswer } from "@/lib/sharoushi/store"
+import {
+  addStudySeconds,
+  recordAnswer,
+  useStudyData,
+} from "@/lib/sharoushi/store"
 import { getSubject } from "@/lib/sharoushi/subjects"
 import { cn } from "@/lib/utils"
 
@@ -45,6 +50,7 @@ export function QuizSession({
   const [picked, setPicked] = useState<boolean | null>(null)
   const [results, setResults] = useState<SessionResult[]>([])
   const shownAt = useRef(startedAt)
+  const check = useStudyData()?.checks[items[index].question.id]
 
   const item = items[index]
   const question = item.question
@@ -119,6 +125,16 @@ export function QuizSession({
             >
               {item.kind === "review" ? "復習" : "新規"}
             </Badge>
+            <span
+              className={cn(
+                "ml-auto text-xs",
+                check?.status === "ok" && "text-emerald-700 dark:text-emerald-300",
+                check?.status === "flag" && "text-rose-700 dark:text-rose-300",
+                !check && "text-muted-foreground"
+              )}
+            >
+              {check?.status === "ok" ? "確認済み" : check?.status === "flag" ? "要修正" : "未確認"}
+            </span>
           </div>
           <p className="text-base leading-relaxed">{question.statement}</p>
         </CardContent>
@@ -166,8 +182,8 @@ export function QuizSession({
               </span>
             </div>
             <p className="text-sm leading-relaxed">{question.explanation}</p>
-            <p className="text-muted-foreground text-xs">根拠: {question.basis}</p>
           </div>
+          <QuestionCheck question={question} />
           <Button
             size="xl"
             onClick={next}

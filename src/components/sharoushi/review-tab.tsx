@@ -1,13 +1,14 @@
 "use client"
 
-import { History, RotateCcw } from "lucide-react"
+import { useState } from "react"
+import { ClipboardCopy, History, RotateCcw } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { addDays, fromDateKey, type DateKey } from "@/lib/sharoushi/dates"
-import type { Question } from "@/lib/sharoushi/questions"
+import { QUESTIONS, type Question } from "@/lib/sharoushi/questions"
 import type { StudyData } from "@/lib/sharoushi/store"
 import { subjectStats, weakQuestions } from "@/lib/sharoushi/stats"
 import { getSubject } from "@/lib/sharoushi/subjects"
@@ -24,6 +25,25 @@ type ReviewTabProps = {
 export function ReviewTab({ data, today, due, lastWrong, onStart }: ReviewTabProps) {
   const stats = subjectStats(data.cards)
   const weak = weakQuestions(data.cards)
+  const [copied, setCopied] = useState(false)
+  const flagged = QUESTIONS.filter((q) => data.checks[q.id]?.status === "flag")
+  const okCount = QUESTIONS.filter((q) => data.checks[q.id]?.status === "ok").length
+
+  async function copyReport() {
+    const text = flagged
+      .map((q) => {
+        const note = data.checks[q.id]?.note
+        return `[${q.id}] ${q.statement}\n  正解: ${q.answer ? "○" : "×"} / 根拠: ${q.basis}${note ? `\n  メモ: ${note}` : ""}`
+      })
+      .join("\n\n")
+    try {
+      await navigator.clipboard.writeText(`誤りの報告（${flagged.length}件）\n\n${text}`)
+      setCopied(true)
+    } catch {
+      window.prompt("コピーできませんでした。以下を選択してコピーしてください", text)
+    }
+  }
+
   const days = Array.from({ length: 28 }, (_, i) => addDays(today, i - 27))
 
   return (
@@ -147,6 +167,57 @@ export function ReviewTab({ data, today, due, lastWrong, onStart }: ReviewTabPro
               ))}
             </ul>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className="gap-3 rounded-2xl py-4">
+        <CardContent className="flex flex-col gap-3">
+          <h2 className="text-sm font-bold">問題の確認状況</h2>
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="rounded-xl bg-emerald-50 py-2 dark:bg-emerald-950/40">
+              <div className="text-muted-foreground">確認済み</div>
+              <div className="text-lg font-bold tabular-nums">{okCount}</div>
+            </div>
+            <div className="rounded-xl bg-rose-50 py-2 dark:bg-rose-950/40">
+              <div className="text-muted-foreground">要修正</div>
+              <div className="text-lg font-bold tabular-nums">{flagged.length}</div>
+            </div>
+            <div className="bg-muted/60 rounded-xl py-2">
+              <div className="text-muted-foreground">未確認</div>
+              <div className="text-lg font-bold tabular-nums">
+                {QUESTIONS.length - okCount - flagged.length}
+              </div>
+            </div>
+          </div>
+          {flagged.length > 0 && (
+            <>
+              <ul className="flex flex-col gap-2">
+                {flagged.map((q) => (
+                  <li key={q.id} className="flex flex-col gap-0.5 text-sm">
+                    <span className="line-clamp-2">{q.statement}</span>
+                    {data.checks[q.id]?.note && (
+                      <span className="text-muted-foreground text-xs">
+                        メモ: {data.checks[q.id]?.note}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={copyReport}
+                className="gap-1 self-start"
+              >
+                <ClipboardCopy className="size-3.5" />
+                {copied ? "コピーしました" : "報告内容をコピー"}
+              </Button>
+            </>
+          )}
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            解説の下の「条文で確認した」「誤りを報告」で記録できます。
+            報告内容をコピーして Claude に渡すと、問題データを直せます。
+          </p>
         </CardContent>
       </Card>
     </div>

@@ -5,6 +5,7 @@ import { Check, House, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { QuestionCheck } from "@/components/sharoushi/question-check"
 import type { MockQuestion, MockScore } from "@/lib/sharoushi/mock"
 import { EXAM_GROUPS } from "@/lib/sharoushi/subjects"
 import { cn } from "@/lib/utils"
@@ -104,8 +105,9 @@ export function MockResult({ questions, picks, score, onHome }: MockResultProps)
                       </span>{" "}
                       {option.statement}
                       {(j === q.answerIndex || j === pick) && (
-                        <span className="text-muted-foreground mt-1 block">
-                          → {option.explanation}（{option.basis}）
+                        <span className="mt-1 flex flex-col gap-2">
+                          <span className="text-muted-foreground">→ {option.explanation}</span>
+                          <QuestionCheck question={option} />
                         </span>
                       )}
                     </li>
