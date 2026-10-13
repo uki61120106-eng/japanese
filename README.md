@@ -10,6 +10,19 @@
 
 要件の詳細は [`docs/requirements.md`](docs/requirements.md) を参照してください。
 
+## 社労士 毎日30分（`/sharoushi`）
+
+社会保険労務士試験を毎日30分・1年で目指す学習アプリも同じリポジトリに入っています。
+`npm run dev` のあと http://localhost:3000/sharoushi を開いてください。
+
+- 今日: 復習＋新しい問題10問の「今日のメニュー」、試験までの日数、学習時間、連続学習日数
+- 振り返り: 間隔反復（1→3→7→14→30→60日）の復習、前回間違えた問題、苦手な問題、科目別の進み具合
+- 模試: 7科目区分×2問のミニ模試（択一式・制限時間つき）と受験記録
+- 計画: インプット期 → アウトプット期 → 直前期 の年間計画、試験日・目標時間の設定
+
+学習記録はブラウザの localStorage に保存されます。要件と未対応事項は
+[`docs/sharoushi-requirements.md`](docs/sharoushi-requirements.md) を参照してください。
+
 ## 使い方
 
 ```bash
@@ -53,6 +66,13 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/study.ts` | デッキの生成、シャッフル、集計 |
 | `src/lib/row-theme.ts` | 行ごとの配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
+| `src/app/sharoushi/page.tsx` | 社労士アプリの画面の出し分け |
+| `src/components/sharoushi/` | 社労士アプリの各タブ・出題・模試の画面 |
+| `src/lib/sharoushi/questions.ts` | 社労士の問題データ（一問一答） |
+| `src/lib/sharoushi/plan.ts` | 年間計画と毎日のメニューの組み立て |
+| `src/lib/sharoushi/srs.ts` | 間隔反復の計算 |
+| `src/lib/sharoushi/mock.ts` | 模試の生成と採点 |
+| `src/lib/sharoushi/store.ts` | 学習記録の保存（localStorage） |
 | `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
 
 ## 技術
