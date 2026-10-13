@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:toeic": "node scripts/check-toeic-data.mjs",
     "build:demo": "node scripts/build-demo.mjs"
   },
   "dependencies": {

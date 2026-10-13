@@ -45,7 +45,11 @@ const bundle = await esbuild.build({
   target: "es2020",
   jsx: "automatic",
   tsconfig: join(root, "tsconfig.json"),
-  define: { "process.env.NODE_ENV": '"production"' },
+  define: {
+    "process.env.NODE_ENV": '"production"',
+    // 1枚 HTML には / のページしか入らないので、他ページへのリンクを落とす
+    "process.env.NEXT_PUBLIC_SINGLE_FILE_DEMO": '"1"',
+  },
   write: false,
 })
 

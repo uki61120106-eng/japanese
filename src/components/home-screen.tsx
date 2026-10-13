@@ -1,6 +1,6 @@
 "use client"
 
-import { Play, Shuffle, Sparkles } from "lucide-react"
+import { GraduationCap, Play, Shuffle, Sparkles } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ROWS, rowCount, rowLabel, type RowId, type Script } from "@/lib/kana"
 import { ROW_THEME } from "@/lib/row-theme"
 import { cn } from "@/lib/utils"
+
+/** 1枚 HTML のデモにはこのページしか入らないので、他ページへの導線は隠す */
+const SINGLE_FILE_DEMO = process.env.NEXT_PUBLIC_SINGLE_FILE_DEMO === "1"
 
 type HomeScreenProps = {
   script: Script
@@ -151,6 +154,23 @@ export function HomeScreen({
           {total === 0 ? "行をひとつ以上えらんでください" : `ぜんぶで ${total} まい`}
         </p>
       </div>
+
+      {/*
+        next/link は Next のランタイムを引き込み、1枚 HTML のデモ
+        （scripts/build-demo.mjs）で process 参照が残って動かなくなる。
+        ページ間の行き来は素の <a> で足りるので、ここでは使わない。
+      */}
+      {!SINGLE_FILE_DEMO && (
+        <footer className="flex justify-center pb-4">
+          <a
+            href="/toeic"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs underline-offset-4 hover:underline"
+          >
+            <GraduationCap className="size-3.5" />
+            TOEIC トレーナーへ
+          </a>
+        </footer>
+      )}
     </div>
   )
 }

@@ -92,3 +92,14 @@
     font-family: var(--font-app-sans);
   }
 }
+
+@layer utilities {
+  /*
+    TOEIC パートの英文用。UI の丸ゴシックのままだと英文が読みづらいので、
+    英文だけ一般的なサンセリフに切り替える。
+  */
+  .font-english {
+    font-family:
+      "Helvetica Neue", Helvetica, Arial, "Segoe UI", system-ui, sans-serif;
+  }
+}

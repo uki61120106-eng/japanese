@@ -42,3 +42,4 @@ next-env.d.ts
 
 # 共有用の1枚 HTML（npm run build:demo で生成）
 /dist-demo/
+/dist-artifact/
