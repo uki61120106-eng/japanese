@@ -97,7 +97,8 @@ const fontHead = fontFaces
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap">`
 
-const html = `<title>${app.title}</title>
+const html = `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${app.title}</title>
 ${fontHead}
 <style>${css}</style>
 <div id="root" class="min-h-dvh bg-linear-to-b from-rose-50 via-amber-50 to-sky-50 antialiased dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"></div>

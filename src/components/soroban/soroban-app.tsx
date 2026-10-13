@@ -6,6 +6,7 @@ import { SorobanHome } from "@/components/soroban/soroban-home"
 import { SorobanQuiz } from "@/components/soroban/soroban-quiz"
 import { SorobanResult } from "@/components/soroban/soroban-result"
 import { buildQuiz, type Grade, type KindChoice, type Problem } from "@/lib/soroban"
+import { cn } from "@/lib/utils"
 
 type Screen = "home" | "quiz" | "result"
 
@@ -36,10 +37,20 @@ export function SorobanApp() {
     setProblems(next)
     setRound((value) => value + 1)
     setScreen("quiz")
+    // ホームを下までスクロールしてスタートしても、問題が上から見えるようにする
+    window.scrollTo(0, 0)
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col px-4 py-8 sm:py-12">
+    <main
+      className={cn(
+        "mx-auto flex w-full max-w-lg flex-col px-4",
+        // 出題中はスマホの1画面に収めて、問題とテンキーの間でスクロールさせない
+        screen === "quiz"
+          ? "h-[calc(100dvh-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] py-3"
+          : "py-8 sm:py-12"
+      )}
+    >
       {screen === "home" && (
         <SorobanHome
           grade={grade}

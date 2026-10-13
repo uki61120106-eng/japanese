@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ArrowRight, Circle, Delete, Timer, X } from "lucide-react"
+import { ArrowDown, ArrowRight, Circle, Delete, Timer, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -47,6 +47,9 @@ export function SorobanQuiz({
   const [checked, setChecked] = useState<number | null>(null)
   const [elapsedMs, setElapsedMs] = useState(0)
   const startedAt = useRef(0)
+  const problemArea = useRef<HTMLDivElement>(null)
+  /** 問題の下側が画面に入りきっていないとき true */
+  const [hasMoreBelow, setHasMoreBelow] = useState(false)
 
   const current = problems[index]
   const correct = answerOf(current)
@@ -99,6 +102,23 @@ export function SorobanQuiz({
     setChecked(null)
   }
 
+  // 見取算の数が見切れていたら「したに つづくよ」を出す（数を見落とさないように）
+  function updateHasMoreBelow() {
+    const el = problemArea.current
+    if (!el) return
+    setHasMoreBelow(el.scrollTop + el.clientHeight < el.scrollHeight - 4)
+  }
+
+  useEffect(() => {
+    const el = problemArea.current
+    if (!el) return
+    el.scrollTop = 0
+    updateHasMoreBelow()
+    const observer = new ResizeObserver(updateHasMoreBelow)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [index])
+
   // パソコンではキーボードでも入力できる
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -117,8 +137,8 @@ export function SorobanQuiz({
   const isCorrect = checked === correct
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="flex flex-col gap-2">
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      <header className="flex shrink-0 flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
           <span className="text-muted-foreground text-sm font-medium tabular-nums">
             {grade}きゅう ・ {index + 1} / {problems.length} もんめ
@@ -146,16 +166,35 @@ export function SorobanQuiz({
         />
       </header>
 
-      <div className="bg-card relative flex flex-col items-center gap-3 rounded-3xl border-2 px-4 py-5 shadow-lg">
-        <span className="rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
-          {KIND_LABEL[current.kind]}
-        </span>
-        <ProblemView problem={current} />
+      <div className="bg-card flex min-h-0 flex-1 flex-col items-center gap-2 rounded-3xl border-2 px-4 py-3 shadow-lg">
+        {/* 画面がとても低いときだけ、問題の部分がスクロールする */}
+        <div className="relative flex min-h-0 w-full flex-1 flex-col">
+          <div
+            ref={problemArea}
+            onScroll={updateHasMoreBelow}
+            className="flex min-h-0 w-full flex-1 overflow-y-auto"
+          >
+            <div className="m-auto flex flex-col items-center gap-2">
+              <span className="rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
+                {KIND_LABEL[current.kind]}
+              </span>
+              <ProblemView problem={current} />
+            </div>
+          </div>
+          {hasMoreBelow && (
+            <div className="from-card pointer-events-none absolute inset-x-0 bottom-0 flex justify-center bg-linear-to-t pt-6">
+              <span className="flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white shadow">
+                <ArrowDown className="size-3.5" />
+                したに つづくよ
+              </span>
+            </div>
+          )}
+        </div>
 
         <div
           aria-live="polite"
           className={cn(
-            "flex h-16 w-full items-center justify-end rounded-2xl border-2 px-4 text-4xl font-black tabular-nums",
+            "flex h-12 w-full shrink-0 items-center [@media(min-height:620px)]:h-14 justify-end rounded-2xl border-2 px-4 text-3xl font-black tabular-nums",
             checked === null && "border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30",
             checked !== null &&
               isCorrect &&
@@ -183,7 +222,7 @@ export function SorobanQuiz({
           canSubmit={input !== ""}
         />
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex shrink-0 flex-col gap-3">
           <div
             className={cn(
               "flex items-center justify-center gap-3 rounded-2xl px-4 py-4 text-center",
@@ -238,10 +277,11 @@ function NumberPad({
   onSubmit: () => void
   canSubmit: boolean
 }) {
+  // 背の低いスマホ（iPhone SE など）ではキーを少し低くする
   const key =
-    "h-14 rounded-2xl border-2 bg-card text-2xl font-bold shadow-sm transition-all active:scale-95 hover:bg-muted"
+    "h-11 [@media(min-height:620px)]:h-12 [@media(min-height:720px)]:h-14 rounded-2xl border-2 bg-card text-2xl font-bold shadow-sm transition-all active:scale-95 hover:bg-muted"
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid shrink-0 grid-cols-3 gap-2 select-none">
       {["7", "8", "9", "4", "5", "6", "1", "2", "3"].map((digit) => (
         <button
           key={digit}
@@ -266,7 +306,7 @@ function NumberPad({
       <button
         type="button"
         disabled={!canSubmit}
-        className="h-14 rounded-2xl bg-emerald-500 text-lg font-bold text-white shadow-lg shadow-emerald-500/25 transition-all hover:bg-emerald-500/90 active:scale-95 disabled:opacity-40"
+        className="h-11 rounded-2xl bg-emerald-500 [@media(min-height:620px)]:h-12 [@media(min-height:720px)]:h-14 text-lg font-bold text-white shadow-lg shadow-emerald-500/25 transition-all hover:bg-emerald-500/90 active:scale-95 disabled:opacity-40"
         onClick={onSubmit}
       >
         こたえる

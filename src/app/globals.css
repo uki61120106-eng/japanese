@@ -87,6 +87,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* スマホで連打してもダブルタップ拡大が起きないようにする */
+  button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-app-sans);

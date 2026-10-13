@@ -21,7 +21,7 @@ export function ProblemView({
             ? "text-sm leading-tight"
             : // 4級の10口でもテンキーと一緒に画面に収まるよう少し小さくする
               problem.rows.length > 7
-              ? "text-xl leading-tight"
+              ? "text-base leading-[1.2] [@media(min-height:620px)]:text-lg [@media(min-height:720px)]:text-xl"
               : "text-2xl leading-snug"
         )}
       >
