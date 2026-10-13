@@ -12,6 +12,10 @@ type SpeakCheckProps = {
   /** お手本の英文 */
   expected: string
   supported: boolean
+  /** マイクが使えないと分かった環境か（許可されない、埋め込み先が許さない等） */
+  blocked: boolean
+  /** 使えないと分かったときに呼ぶ。以後ボタンを出さないため、親で覚えてもらう */
+  onBlocked: () => void
 }
 
 const ERROR_MESSAGE: Record<ListenError, string> = {
@@ -36,7 +40,12 @@ const JUDGEMENT_STYLE = {
     "border-slate-300 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200",
 } as const
 
-export function SpeakCheck({ expected, supported }: SpeakCheckProps) {
+export function SpeakCheck({
+  expected,
+  supported,
+  blocked,
+  onBlocked,
+}: SpeakCheckProps) {
   const [listening, setListening] = useState(false)
   const [result, setResult] = useState<PronunciationResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -58,7 +67,11 @@ export function SpeakCheck({ expected, supported }: SpeakCheckProps) {
 
     handleRef.current = listen({
       onResult: (transcript) => setResult(evaluate(expected, transcript)),
-      onError: (reason) => setError(ERROR_MESSAGE[reason]),
+      onError: (reason) => {
+        setError(ERROR_MESSAGE[reason])
+        // 許可されない・そもそも使えない環境では、押すたびに同じ失敗をさせない
+        if (reason === "denied" || reason === "unsupported") onBlocked()
+      },
       onEnd: () => {
         setListening(false)
         handleRef.current = null
@@ -66,11 +79,13 @@ export function SpeakCheck({ expected, supported }: SpeakCheckProps) {
     })
   }
 
-  if (!supported) {
+  if (!supported || blocked) {
     return (
-      <p className="text-muted-foreground flex items-center justify-center gap-2 rounded-2xl border border-dashed px-4 py-3 text-xs">
+      <p className="text-muted-foreground flex items-center justify-center gap-2 rounded-2xl border border-dashed px-4 py-3 text-center text-xs leading-relaxed">
         <MicOff className="size-4 shrink-0" />
-        このブラウザは音声の聞き取りに対応していません（Chrome や Edge でお試しください）
+        {blocked
+          ? "この環境ではマイクを使えないため、発音チェックは利用できません。「聞く」での練習は続けられます"
+          : "このブラウザは音声の聞き取りに対応していません（Chrome や Edge でお試しください）"}
       </p>
     )
   }

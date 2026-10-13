@@ -17,6 +17,9 @@ type PracticeScreenProps = {
   deck: Phrase[]
   mode: Mode
   support: SpeechSupport
+  /** マイクが使えないと分かっているか（ラウンドをまたいで親が覚える） */
+  micBlocked: boolean
+  onMicBlocked: () => void
   onFinish: (answers: Record<string, Answer>) => void
   onQuit: () => void
 }
@@ -28,6 +31,8 @@ export function PracticeScreen({
   deck,
   mode,
   support,
+  micBlocked,
+  onMicBlocked,
   onFinish,
   onQuit,
 }: PracticeScreenProps) {
@@ -117,6 +122,8 @@ export function PracticeScreen({
           key={current.id}
           expected={current.en}
           supported={support.listen}
+          blocked={micBlocked}
+          onBlocked={onMicBlocked}
         />
       )}
 

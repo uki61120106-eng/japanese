@@ -31,6 +31,13 @@ export function EnglishApp() {
    * 音声の対応状況。サーバー側では判定できないため、まず「対応なし」で描画し、
    * マウント後にブラウザの実際の対応状況へ差し替える（hydration を合わせる）。
    */
+  /**
+   * マイクが実際に使えなかったことを覚えておく。API が存在していても、
+   * 許可されない環境（アーティファクトへの埋め込みなど）では使えないため、
+   * 一度失敗したらボタンを出さずに理由を出す。
+   */
+  const [micBlocked, setMicBlocked] = useState(false)
+
   const support = useSyncExternalStore(
     subscribeSupport,
     getSupport,
@@ -74,6 +81,8 @@ export function EnglishApp() {
           deck={deck}
           mode={mode}
           support={support}
+          micBlocked={micBlocked}
+          onMicBlocked={() => setMicBlocked(true)}
           onFinish={(result) => {
             setAnswers(result)
             setScreen("result")
