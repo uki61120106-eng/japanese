@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CalendarDays, Dumbbell, Target } from "lucide-react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -17,6 +17,7 @@ import {
   totalSeconds,
   type Segment,
 } from "@/lib/workout/plan"
+import { registerServiceWorker } from "@/lib/workout/pwa"
 import { unlockAudio } from "@/lib/workout/sound"
 import {
   updateWorkoutData,
@@ -43,6 +44,10 @@ export function WorkoutApp() {
   const [today, setToday] = useState(() => new Date())
   const [screen, setScreen] = useState<Screen>({ name: "home" })
   const [tab, setTab] = useState<Tab>("today")
+
+  useEffect(() => {
+    registerServiceWorker()
+  }, [])
 
   if (!data) {
     // 端末の記録を読み込むまでの一瞬だけ表示される

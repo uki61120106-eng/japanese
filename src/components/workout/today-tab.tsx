@@ -3,6 +3,7 @@
 import { Check, Flame, Play, Volume2, VolumeX } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { InstallHint } from "@/components/workout/install-hint"
 import { Switch } from "@/components/ui/switch"
 import { resolveExercise } from "@/lib/workout/exercises"
 import {
@@ -179,6 +180,8 @@ export function TodayTab({ data, today, weightKg, onStart }: TodayTabProps) {
           {doneToday ? "もう一度やる" : "20分スタート"}
         </Button>
       </section>
+
+      <InstallHint hidden={settings.hideInstallHint} />
 
       <section className="bg-card flex flex-col gap-3 rounded-3xl border p-5 shadow-sm">
         <div className="flex items-center justify-between">

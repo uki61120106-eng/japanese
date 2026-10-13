@@ -63,6 +63,10 @@
   --primary: oklch(0.68 0.19 45);
   --primary-foreground: oklch(0.99 0.01 45);
   --ring: oklch(0.68 0.19 45);
+
+  /* スマホでボタンを素早く押したときに拡大されないようにする */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @theme inline {

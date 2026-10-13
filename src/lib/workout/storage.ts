@@ -12,6 +12,8 @@ export type Settings = {
   quiet: boolean
   /** 種目名とカウントダウンを読み上げる */
   voice: boolean
+  /** 「ホーム画面に追加」の案内を閉じた */
+  hideInstallHint: boolean
 }
 
 export type Goal = {
@@ -46,7 +48,7 @@ const KEY = "ie-kintore:v1"
 
 const EMPTY: WorkoutData = {
   version: 1,
-  settings: { level: "easy", quiet: true, voice: true },
+  settings: { level: "easy", quiet: true, voice: true, hideInstallHint: false },
   goal: null,
   sessions: [],
   weights: [],

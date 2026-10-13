@@ -20,6 +20,25 @@
 - 記録は端末のブラウザに保存（通信なし）
 
 要件は [`docs/workout-requirements.md`](docs/workout-requirements.md)。
+
+### スマホで使う
+
+ホーム画面に追加できるウェブアプリ（PWA）になっています。一度開けば通信がなくても起動します。
+
+1. 下の「Vercel へのデプロイ」で公開する（スマホから開くには https の URL が必要）
+2. スマホのブラウザで `https://<公開先>/workout` を開く
+3. iPhone は Safari の共有ボタン →「ホーム画面に追加」、Android は表示される「ホーム画面に追加する」ボタン
+   （出ない場合はブラウザのメニュー →「ホーム画面に追加」）
+
+記録は端末のブラウザに保存されます。iPhone では Safari とホーム画面のアプリで保存場所が分かれるため、
+記録を始める前に追加してください。
+
+| ファイル | 役割 |
+| --- | --- |
+| `public/workout/manifest.webmanifest` | アプリ名・アイコン・起動 URL（`/workout`） |
+| `public/workout/icons/` | アイコン（`icon.svg` が元絵） |
+| `public/workout-sw.js` | オフライン用の Service Worker（`/workout` だけを受け持つ） |
+| `src/lib/workout/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定 |
 1枚の HTML にする場合は `npm run build:workout`（`dist-demo/workout.html`）。
 
 ## 使い方

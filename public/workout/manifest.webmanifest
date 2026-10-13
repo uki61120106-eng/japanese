@@ -1,0 +1,19 @@
+{
+  "id": "/workout",
+  "name": "おうち筋トレ20",
+  "short_name": "筋トレ20",
+  "description": "道具なし・毎日20分の自宅トレーニング。1年で3kg減を目標に記録します。",
+  "lang": "ja",
+  "start_url": "/workout",
+  "scope": "/workout",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff7ed",
+  "theme_color": "#f97316",
+  "categories": ["health", "fitness"],
+  "icons": [
+    { "src": "/workout/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/workout/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/workout/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
