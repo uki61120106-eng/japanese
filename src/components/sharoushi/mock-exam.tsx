@@ -31,6 +31,8 @@ export function MockExam({ questions, startedAt, onSubmit, onQuit }: MockExamPro
     questions.map(() => null)
   )
   const [now, setNow] = useState(startedAt)
+  /** 画面内で確認を取る（埋め込み先によっては confirm() が使えないため） */
+  const [confirming, setConfirming] = useState<"submit" | "quit" | null>(null)
 
   const limitSeconds = questions.length * MOCK_MINUTES_PER_QUESTION * 60
   const elapsed = Math.floor((now - startedAt) / 1000)
@@ -50,14 +52,9 @@ export function MockExam({ questions, startedAt, onSubmit, onQuit }: MockExamPro
   const question = questions[index]
   const group = EXAM_GROUPS.find((g) => g.id === question.group)
 
+  const unanswered = questions.length - answered
+
   function submit() {
-    const unanswered = questions.length - answered
-    if (
-      unanswered > 0 &&
-      !window.confirm(`未回答が${unanswered}問あります。提出しますか？`)
-    ) {
-      return
-    }
     onSubmit(picks, Math.min(elapsed, limitSeconds))
   }
 
@@ -77,9 +74,7 @@ export function MockExam({ questions, startedAt, onSubmit, onQuit }: MockExamPro
           variant="ghost"
           size="sm"
           className="text-muted-foreground h-7 text-xs"
-          onClick={() => {
-            if (window.confirm("模試を中止します。記録は残りません。よろしいですか？")) onQuit()
-          }}
+          onClick={() => setConfirming("quit")}
         >
           中止する
         </Button>
@@ -164,13 +159,43 @@ export function MockExam({ questions, startedAt, onSubmit, onQuit }: MockExamPro
         ) : (
           <Button
             size="xl"
-            onClick={submit}
+            onClick={() => (unanswered > 0 ? setConfirming("submit") : submit())}
             className="rounded-2xl bg-indigo-600 font-bold text-white hover:bg-indigo-600/90"
           >
             提出する
           </Button>
         )}
       </div>
+      {confirming && (
+        <div
+          role="alertdialog"
+          aria-label={confirming === "submit" ? "提出の確認" : "中止の確認"}
+          className="flex flex-col gap-3 rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-700 dark:bg-amber-950/40"
+        >
+          <p className="font-bold">
+            {confirming === "submit"
+              ? `未回答が${unanswered}問あります。このまま提出しますか？`
+              : "模試を中止します。この回の記録は残りません。"}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" onClick={() => setConfirming(null)}>
+              {confirming === "submit" ? "解答に戻る" : "続ける"}
+            </Button>
+            <Button
+              onClick={confirming === "submit" ? submit : onQuit}
+              className={cn(
+                "text-white",
+                confirming === "submit"
+                  ? "bg-indigo-600 hover:bg-indigo-600/90"
+                  : "bg-rose-600 hover:bg-rose-600/90"
+              )}
+            >
+              {confirming === "submit" ? "提出する" : "中止する"}
+            </Button>
+          </div>
+        </div>
+      )}
+
       <p className="text-muted-foreground text-center text-xs tabular-nums">
         回答済み {answered} / {questions.length}問
       </p>

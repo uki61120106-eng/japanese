@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "build:demo": "node scripts/build-demo.mjs",
+    "build:demo:sharoushi": "node scripts/build-demo.mjs --app sharoushi",
     "check:questions": "node scripts/check-questions.mjs"
   },
   "dependencies": {

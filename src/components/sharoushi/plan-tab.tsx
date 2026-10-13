@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -31,6 +33,8 @@ function shortDate(key: DateKey) {
 }
 
 export function PlanTab({ data, today, plan }: PlanTabProps) {
+  const [confirmReset, setConfirmReset] = useState(false)
+
   return (
     <div className="flex flex-col gap-4">
       <Card className="gap-3 rounded-2xl py-4">
@@ -118,18 +122,35 @@ export function PlanTab({ data, today, plan }: PlanTabProps) {
             試験日の初期値は「例年8月第4日曜」からの推定です。
             試験案内（社会保険労務士試験オフィシャルサイト）で正式な日程を確認して直してください。
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="self-start text-rose-600"
-            onClick={() => {
-              if (window.confirm("学習記録と模試の結果をすべて消去します。よろしいですか？")) {
-                resetStudyData()
-              }
-            }}
-          >
-            学習記録を消去する
-          </Button>
+          {confirmReset ? (
+            <div className="flex flex-col gap-2 rounded-xl border-2 border-rose-300 p-3 text-sm dark:border-rose-800">
+              <p>学習記録・模試の結果・確認状況をすべて消去します。元に戻せません。</p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setConfirmReset(false)}>
+                  やめる
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-rose-600 text-white hover:bg-rose-600/90"
+                  onClick={() => {
+                    resetStudyData()
+                    setConfirmReset(false)
+                  }}
+                >
+                  消去する
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="self-start text-rose-600"
+              onClick={() => setConfirmReset(true)}
+            >
+              学習記録を消去する
+            </Button>
+          )}
         </CardContent>
       </Card>
 

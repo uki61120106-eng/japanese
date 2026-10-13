@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { BadgeCheck, ExternalLink, Flag } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -12,18 +13,20 @@ import { cn } from "@/lib/utils"
 export function QuestionCheck({ question }: { question: Question }) {
   const data = useStudyData()
   const check = data?.checks[question.id]
+  /** 報告メモの入力中（埋め込み先によっては prompt() が使えないため画面内で入力する） */
+  const [draft, setDraft] = useState<string | null>(null)
 
   function flag() {
     if (check?.status === "flag") {
       setQuestionCheck(question.id, "flag")
       return
     }
-    const note = window.prompt(
-      "どこが怪しいかメモしてください（空のままでも記録できます）",
-      ""
-    )
-    if (note === null) return
-    setQuestionCheck(question.id, "flag", note.trim() || undefined)
+    setDraft("")
+  }
+
+  function submitFlag() {
+    setQuestionCheck(question.id, "flag", draft?.trim() || undefined)
+    setDraft(null)
   }
 
   return (
@@ -75,6 +78,36 @@ export function QuestionCheck({ question }: { question: Question }) {
           {check?.status === "flag" ? "報告済み（取り消す）" : "誤りを報告"}
         </Button>
       </div>
+      {draft !== null && (
+        <form
+          className="flex flex-col gap-2"
+          onSubmit={(event) => {
+            event.preventDefault()
+            submitFlag()
+          }}
+        >
+          <label htmlFor={`flag-note-${question.id}`} className="text-xs">
+            どこが怪しいかメモ（空のままでも記録できます）
+          </label>
+          <textarea
+            id={`flag-note-${question.id}`}
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            rows={2}
+            autoFocus
+            className="border-input bg-background rounded-md border px-2 py-1 text-sm"
+            placeholder="例: 期限は14日ではなく10日では？"
+          />
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => setDraft(null)}>
+              やめる
+            </Button>
+            <Button type="submit" size="sm" className="bg-rose-600 text-white hover:bg-rose-600/90">
+              報告を記録する
+            </Button>
+          </div>
+        </form>
+      )}
       {check?.status === "flag" && check.note && (
         <p className="text-muted-foreground text-xs">メモ: {check.note}</p>
       )}

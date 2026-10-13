@@ -26,6 +26,8 @@ export function ReviewTab({ data, today, due, lastWrong, onStart }: ReviewTabPro
   const stats = subjectStats(data.cards)
   const weak = weakQuestions(data.cards)
   const [copied, setCopied] = useState(false)
+  /** クリップボードが使えない環境では、選択してコピーできるように本文を出す */
+  const [fallbackText, setFallbackText] = useState<string | null>(null)
   const flagged = QUESTIONS.filter((q) => data.checks[q.id]?.status === "flag")
   const okCount = QUESTIONS.filter((q) => data.checks[q.id]?.status === "ok").length
 
@@ -36,11 +38,12 @@ export function ReviewTab({ data, today, due, lastWrong, onStart }: ReviewTabPro
         return `[${q.id}] ${q.statement}\n  正解: ${q.answer ? "○" : "×"} / 根拠: ${q.basis}${note ? `\n  メモ: ${note}` : ""}`
       })
       .join("\n\n")
+    const report = `誤りの報告（${flagged.length}件）\n\n${text}`
     try {
-      await navigator.clipboard.writeText(`誤りの報告（${flagged.length}件）\n\n${text}`)
+      await navigator.clipboard.writeText(report)
       setCopied(true)
     } catch {
-      window.prompt("コピーできませんでした。以下を選択してコピーしてください", text)
+      setFallbackText(report)
     }
   }
 
@@ -212,6 +215,21 @@ export function ReviewTab({ data, today, due, lastWrong, onStart }: ReviewTabPro
                 <ClipboardCopy className="size-3.5" />
                 {copied ? "コピーしました" : "報告内容をコピー"}
               </Button>
+              {fallbackText !== null && (
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="report-text" className="text-xs">
+                    自動でコピーできませんでした。下の文を全選択してコピーしてください。
+                  </label>
+                  <textarea
+                    id="report-text"
+                    readOnly
+                    value={fallbackText}
+                    rows={6}
+                    onFocus={(event) => event.currentTarget.select()}
+                    className="border-input bg-background rounded-md border px-2 py-1 text-xs"
+                  />
+                </div>
+              )}
             </>
           )}
           <p className="text-muted-foreground text-xs leading-relaxed">

@@ -1,6 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/*
+ * dark: は OS の設定に従う。ただし配信先が data-theme 属性で明暗を指定した場合は
+ * そちらを優先する（共有用の1枚 HTML を埋め込み先で表示するとき）。
+ */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+  &:where([data-theme="dark"] *) {
+    @slot;
+  }
+}
+
 :root {
   color-scheme: light;
 
