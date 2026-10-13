@@ -21,6 +21,7 @@
 - 計画: インプット期 → アウトプット期 → 直前期 の年間計画、試験日・目標時間の設定
 - 確認: 解説の下に根拠条文へのリンク、「条文で確認した」「誤りを報告」ボタン。報告内容はコピーして修正依頼に使える
 
+共有用の1枚 HTML は `npm run build:demo:sharoushi`（`dist-demo/sharoushi.html`）で作れます。
 学習記録はブラウザの localStorage に保存されます。要件と未対応事項は
 [`docs/sharoushi-requirements.md`](docs/sharoushi-requirements.md) を参照してください。
 
