@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "build:demo": "node scripts/build-demo.mjs",
-    "build:workout": "node scripts/build-demo.mjs --app workout"
+    "build:workout": "node scripts/build-demo.mjs --app workout",
+    "build:rm": "node scripts/build-demo.mjs --app rm"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.15",

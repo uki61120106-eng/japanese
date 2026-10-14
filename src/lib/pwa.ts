@@ -1,5 +1,5 @@
 /**
- * スマホのホーム画面に追加して使うための仕組み。
+ * スマホのホーム画面に追加して使うための仕組み（/workout と /rm で共有）。
  *   - Service Worker の登録（一度開けば通信なしでも開けるようにする）
  *   - 「ホーム画面に追加」の案内に使う端末の判定と、Android のインストール要求の保持
  */
@@ -19,8 +19,6 @@ export type InstallState = {
   touch: boolean
   /** Android の Chrome などで、ボタンから追加できる */
   canPrompt: boolean
-  /** /workout で開いている（1枚の HTML 版ではホーム画面に追加できない） */
-  onSite: boolean
 }
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null
@@ -41,7 +39,6 @@ function detect(): InstallState {
     ios,
     touch: window.matchMedia("(pointer: coarse)").matches,
     canPrompt: deferredPrompt !== null,
-    onSite: window.location.pathname.startsWith("/workout"),
   }
 }
 
@@ -89,13 +86,21 @@ export async function promptInstall(): Promise<boolean> {
   return outcome === "accepted"
 }
 
-export function registerServiceWorker() {
+/**
+ * そのアプリのページ（scope 配下）で開いているか。
+ * 1枚の HTML にまとめた共有版ではホーム画面に追加できないので、案内も登録もしない。
+ */
+export function isOnSite(scope: string): boolean {
+  return window.location.pathname.startsWith(scope)
+}
+
+/** 例: registerServiceWorker("/rm-sw.js", "/rm") */
+export function registerServiceWorker(script: string, scope: string) {
   if (process.env.NODE_ENV !== "production") return
   if (!("serviceWorker" in navigator)) return
-  // 1枚の HTML にまとめた共有版など、/workout 以外で開いたときは登録しない
-  if (!window.location.pathname.startsWith("/workout")) return
+  if (!isOnSite(scope)) return
   navigator.serviceWorker
-    .register("/workout-sw.js", { scope: "/workout", updateViaCache: "none" })
+    .register(script, { scope, updateViaCache: "none" })
     .catch(() => {
       // 登録できなくても通常のウェブページとして使える
     })

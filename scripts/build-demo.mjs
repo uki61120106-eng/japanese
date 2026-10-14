@@ -1,6 +1,6 @@
 /**
  * アプリを1枚の HTML ファイルに束ねる（共有用デモ）。
- *   node scripts/build-demo.mjs [--app kana|workout] [出力先]
+ *   node scripts/build-demo.mjs [--app kana|workout|rm] [出力先]
  *
  * Next.js の静的書き出しは完全な HTML 文書と複数ファイルになるため、
  * 「HTML を1枚渡せば動く」形が必要な場面ではこちらを使う。
@@ -24,6 +24,11 @@ const APPS = {
     entry: "scripts/workout-entry.tsx",
     title: "おうち筋トレ20",
     out: "dist-demo/workout.html",
+  },
+  rm: {
+    entry: "scripts/rm-entry.tsx",
+    title: "RM 計算機",
+    out: "dist-demo/rm.html",
   },
 }
 

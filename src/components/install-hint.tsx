@@ -3,21 +3,28 @@
 import { Share, SquarePlus, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { promptInstall, useInstallState } from "@/lib/workout/pwa"
-import { updateWorkoutData } from "@/lib/workout/storage"
+import { isOnSite, promptInstall, useInstallState } from "@/lib/pwa"
 
 /** スマホのブラウザで開いているときだけ「ホーム画面に追加」を案内する */
-export function InstallHint({ hidden }: { hidden: boolean }) {
+export function InstallHint({
+  scope,
+  icon,
+  hidden,
+  onDismiss,
+  iosNote,
+}: {
+  /** アプリのページ（例: "/rm"） */
+  scope: string
+  /** 案内に並べるアプリのアイコン */
+  icon: string
+  hidden: boolean
+  onDismiss: () => void
+  /** iPhone の手順の下に添える補足 */
+  iosNote?: string
+}) {
   const install = useInstallState()
-  if (!install || hidden || !install.onSite || install.standalone || !install.touch) {
+  if (!install || hidden || !isOnSite(scope) || install.standalone || !install.touch) {
     return null
-  }
-
-  function dismiss() {
-    updateWorkoutData((data) => ({
-      ...data,
-      settings: { ...data.settings, hideInstallHint: true },
-    }))
   }
 
   return (
@@ -25,7 +32,7 @@ export function InstallHint({ hidden }: { hidden: boolean }) {
       <Button
         variant="ghost"
         size="icon"
-        onClick={dismiss}
+        onClick={onDismiss}
         className="text-muted-foreground absolute top-2 right-2"
         aria-label="案内を閉じる"
       >
@@ -34,7 +41,7 @@ export function InstallHint({ hidden }: { hidden: boolean }) {
       <div className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- 1枚の HTML 版でも同じ表示にするため */}
         <img
-          src="/workout/icons/icon-192.png"
+          src={icon}
           alt=""
           width={44}
           height={44}
@@ -71,9 +78,9 @@ export function InstallHint({ hidden }: { hidden: boolean }) {
             </span>
             「ホーム画面に追加」を選ぶ
           </li>
-          <li className="text-muted-foreground text-xs leading-relaxed">
-            iPhone では Safari とホーム画面のアプリで記録の保存場所が分かれます。記録を始める前に追加するのがおすすめです。
-          </li>
+          {iosNote && (
+            <li className="text-muted-foreground text-xs leading-relaxed">{iosNote}</li>
+          )}
         </ol>
       ) : (
         <p className="text-sm">

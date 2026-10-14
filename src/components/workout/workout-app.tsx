@@ -18,7 +18,7 @@ import {
   totalSeconds,
   type Segment,
 } from "@/lib/workout/plan"
-import { registerServiceWorker } from "@/lib/workout/pwa"
+import { registerServiceWorker } from "@/lib/pwa"
 import { isPastReminder, showReminderNotification } from "@/lib/workout/reminder"
 import { unlockAudio } from "@/lib/workout/sound"
 import {
@@ -48,7 +48,7 @@ export function WorkoutApp() {
   const [tab, setTab] = useState<Tab>("today")
 
   useEffect(() => {
-    registerServiceWorker()
+    registerServiceWorker("/workout-sw.js", "/workout")
   }, [])
 
   // アプリを開いている間は1分ごとに確かめ、時刻を過ぎてまだなら1日1回だけ通知する
