@@ -43,6 +43,17 @@
 | `src/lib/workout/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定 |
 1枚の HTML にする場合は `npm run build:workout`（`dist-demo/workout.html`）。
 
+## RM 計算機（`/rm`）
+
+挙げた重量と回数から、最大挙上重量（1RM）を推定するページです。
+
+- 7つの推定式（Epley / Brzycki / Lander / Lombardi / Mayhew / O'Conner / Wathan）と、その平均で計算
+- 1〜20RM の換算表（プレートの刻み 0.5 / 1.25 / 2.5 / 5 kg に丸め）
+- 筋力アップ・筋肥大・筋持久力ごとの重量の目安
+- 前回の入力だけ端末のブラウザに保存（通信なし）
+
+要件は [`docs/rm-requirements.md`](docs/rm-requirements.md)。1枚の HTML にする場合は `npm run build:rm`（`dist-demo/rm.html`）。
+
 ## 使い方
 
 ```bash
@@ -86,10 +97,13 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/study.ts` | デッキの生成、シャッフル、集計 |
 | `src/lib/row-theme.ts` | 行ごとの配色 |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
-| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト（`--app workout` で筋トレ版） |
+| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト（`--app workout` で筋トレ版、`--app rm` で RM 計算機） |
 | `src/app/workout/` | おうち筋トレ20 のページ |
 | `src/components/workout/` | 今日 / トレーニング中 / 終了 / 記録 / 目標 の各画面 |
 | `src/lib/workout/` | 種目データ、20分の組み立て、カロリー推定、目標計算、保存 |
+| `src/app/rm/` | RM 計算機のページ |
+| `src/components/rm/rm-calculator.tsx` | 入力・推定 1RM・式の比較・換算表・目的別の目安 |
+| `src/lib/rm/` | 推定式と丸め、前回入力の保存 |
 
 ## 技術
 
