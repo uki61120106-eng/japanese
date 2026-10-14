@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react"
 import { Calculator, Info, Minus, Plus } from "lucide-react"
 
+import { InstallHint } from "@/components/install-hint"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { registerServiceWorker } from "@/lib/pwa"
 import { cn } from "@/lib/utils"
 import {
   ACCURATE_REPS,
@@ -37,6 +39,10 @@ function clampReps(reps: number): number {
 export function RmCalculator() {
   const [input, setInput] = useState<RmInput>(DEFAULT_INPUT)
   const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    registerServiceWorker("/rm-sw.js", "/rm")
+  }, [])
 
   // localStorage はサーバー描画時に無いので、表示後に読み込む
   useEffect(() => {
@@ -165,6 +171,13 @@ export function RmCalculator() {
           </div>
         </CardContent>
       </Card>
+
+      <InstallHint
+        scope="/rm"
+        icon="/rm/icons/icon-192.png"
+        hidden={!loaded || input.hideInstallHint}
+        onDismiss={() => update({ hideInstallHint: true })}
+      />
 
       <Card>
         <CardHeader>

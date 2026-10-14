@@ -2,10 +2,10 @@
 
 import { Check, Flame, Play, Volume2, VolumeX } from "lucide-react"
 
+import { InstallHint } from "@/components/install-hint"
 import { Button } from "@/components/ui/button"
 import { DietCard } from "@/components/workout/diet-card"
 import { ExerciseFigure } from "@/components/workout/exercise-figure"
-import { InstallHint } from "@/components/workout/install-hint"
 import { Switch } from "@/components/ui/switch"
 import { resolveExercise } from "@/lib/workout/exercises"
 import {
@@ -197,7 +197,18 @@ export function TodayTab({ data, today, weightKg, onStart }: TodayTabProps) {
 
       <DietCard data={data} today={today} />
 
-      <InstallHint hidden={settings.hideInstallHint} />
+      <InstallHint
+        scope="/workout"
+        icon="/workout/icons/icon-192.png"
+        hidden={settings.hideInstallHint}
+        onDismiss={() =>
+          updateWorkoutData((data) => ({
+            ...data,
+            settings: { ...data.settings, hideInstallHint: true },
+          }))
+        }
+        iosNote="iPhone では Safari とホーム画面のアプリで記録の保存場所が分かれます。記録を始める前に追加するのがおすすめです。"
+      />
 
       <section className="bg-card flex flex-col gap-3 rounded-3xl border p-5 shadow-sm">
         <div className="flex items-center justify-between">

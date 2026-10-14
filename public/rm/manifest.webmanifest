@@ -1,0 +1,19 @@
+{
+  "id": "/rm",
+  "name": "RM 計算機",
+  "short_name": "RM計算",
+  "description": "挙げた重量と回数から最大挙上重量（1RM）を推定し、回数ごとの重量を計算します。",
+  "lang": "ja",
+  "start_url": "/rm",
+  "scope": "/rm",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff1f2",
+  "theme_color": "#4f46e5",
+  "categories": ["health", "fitness", "utilities"],
+  "icons": [
+    { "src": "/rm/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/rm/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/rm/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

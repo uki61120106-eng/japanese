@@ -40,7 +40,8 @@
 | `public/workout/manifest.webmanifest` | アプリ名・アイコン・起動 URL（`/workout`） |
 | `public/workout/icons/` | アイコン（`icon.svg` が元絵） |
 | `public/workout-sw.js` | オフライン用の Service Worker（`/workout` だけを受け持つ） |
-| `src/lib/workout/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定 |
+| `src/lib/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定（RM 計算機と共通） |
+| `src/components/install-hint.tsx` | 「ホーム画面に追加」の案内カード（RM 計算機と共通） |
 1枚の HTML にする場合は `npm run build:workout`（`dist-demo/workout.html`）。
 
 ## RM 計算機（`/rm`）
@@ -51,6 +52,10 @@
 - 1〜20RM の換算表（プレートの刻み 0.5 / 1.25 / 2.5 / 5 kg に丸め）
 - 筋力アップ・筋肥大・筋持久力ごとの重量の目安
 - 前回の入力だけ端末のブラウザに保存（通信なし）
+- スマホのホーム画面に追加できる（PWA）。一度開けば通信がなくても起動する
+
+スマホで使う手順は筋トレ版と同じで、開く URL が `https://<公開先>/rm` になります。
+ファイルは `public/rm/`（マニフェスト・アイコン）と `public/rm-sw.js`（Service Worker）。
 
 要件は [`docs/rm-requirements.md`](docs/rm-requirements.md)。1枚の HTML にする場合は `npm run build:rm`（`dist-demo/rm.html`）。
 

@@ -6,6 +6,8 @@ export type RmInput = {
   reps: number
   formula: FormulaId
   step: number
+  /** 「ホーム画面に追加」の案内を閉じた */
+  hideInstallHint: boolean
 }
 
 const KEY = "rm-calculator:v1"
@@ -15,6 +17,7 @@ export const DEFAULT_INPUT: RmInput = {
   reps: 8,
   formula: "average",
   step: 2.5,
+  hideInstallHint: false,
 }
 
 export function loadInput(): RmInput {
