@@ -36,6 +36,26 @@
 
 要件の詳細は [`docs/english-requirements.md`](docs/english-requirements.md) を参照してください。
 
+### スマホで使う
+
+ホーム画面に追加できるウェブアプリ（PWA）になっています。一度開けば通信がなくても起動します。
+
+1. 下の「Vercel へのデプロイ」で公開する（スマホから開くには https の URL が必要）
+2. スマホのブラウザで `https://<公開先>/english` を開く
+3. iPhone は Safari の共有ボタン →「ホーム画面に追加」、Android は表示される「ホーム画面に追加する」ボタン
+   （出ない場合はブラウザのメニュー →「ホーム画面に追加」）
+
+ホーム画面から開くとブラウザのバーが消えて画面を広く使えます。学習の記録は保存していないため、
+追加のタイミングは問いません。
+
+| ファイル | 役割 |
+| --- | --- |
+| `public/english/manifest.webmanifest` | アプリ名・アイコン・起動 URL（`/english`） |
+| `public/english/icons/` | アイコン（`icon.svg` が元絵） |
+| `public/english-sw.js` | オフライン用の Service Worker（`/english` だけを受け持つ） |
+| `src/lib/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定（ほかのアプリと共通） |
+| `src/components/install-hint.tsx` | 「ホーム画面に追加」の案内カード（ほかのアプリと共通） |
+
 ### 音声機能について
 
 読み上げも聞き取りも、ブラウザ内蔵の Web Speech API を使います。**サーバーも API キーも

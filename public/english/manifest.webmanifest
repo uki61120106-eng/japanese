@@ -1,0 +1,19 @@
+{
+  "id": "/english",
+  "name": "えいかいわフラッシュ",
+  "short_name": "えいかいわ",
+  "description": "初心者向けの英会話フレーズを、聞き流し・カード・発音チェックで覚えます。",
+  "lang": "ja",
+  "start_url": "/english",
+  "scope": "/english",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f0f9ff",
+  "theme_color": "#0ea5e9",
+  "categories": ["education"],
+  "icons": [
+    { "src": "/english/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/english/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/english/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

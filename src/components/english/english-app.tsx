@@ -1,13 +1,15 @@
 "use client"
 
-import { useState, useSyncExternalStore } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 
 import { HomeScreen } from "@/components/english/home-screen"
+import { InstallHint } from "@/components/install-hint"
 import { PracticeScreen } from "@/components/english/practice-screen"
 import { StreamScreen } from "@/components/english/stream-screen"
 import { ResultScreen } from "@/components/english/result-screen"
 import { buildDeck, type Answer, type Mode } from "@/lib/english-study"
 import { SCENES, type Phrase, type SceneId } from "@/lib/phrases"
+import { registerServiceWorker } from "@/lib/pwa"
 import { shuffled } from "@/lib/shuffle"
 import { getServerSupport, getSupport, subscribeSupport } from "@/lib/speech"
 
@@ -38,6 +40,14 @@ export function EnglishApp() {
    * 一度失敗したらボタンを出さずに理由を出す。
    */
   const [micBlocked, setMicBlocked] = useState(false)
+
+  // ホーム画面に追加する案内。保存はしないので、開き直すとまた出る
+  const [installHintHidden, setInstallHintHidden] = useState(false)
+
+  // ホーム画面から開けるようにする。/english 以外（1枚 HTML 版）では何もしない
+  useEffect(() => {
+    registerServiceWorker("/english-sw.js", "/english")
+  }, [])
 
   const support = useSyncExternalStore(
     subscribeSupport,
@@ -75,6 +85,18 @@ export function EnglishApp() {
             startNewDeck(buildDeck({ scenes: selectedScenes, shuffle }))
           }
         />
+      )}
+
+      {screen === "home" && (
+        <div className="mt-6">
+          <InstallHint
+            scope="/english"
+            icon="/english/icons/icon-192.png"
+            hidden={installHintHidden}
+            onDismiss={() => setInstallHintHidden(true)}
+            iosNote="追加したアイコンから開くと、ブラウザのバーが消えて画面を広く使えます"
+          />
+        </div>
       )}
 
       {screen === "stream" && (
