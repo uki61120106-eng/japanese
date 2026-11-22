@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   Languages,
   Pause,
@@ -16,14 +16,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Switch } from "@/components/ui/switch"
-import { getScene, type Phrase } from "@/lib/phrases"
 import { SCENE_THEME } from "@/lib/scene-theme"
 import { hasVoice, speak, stopSpeaking, type SpeechSupport } from "@/lib/speech"
+import type { StreamItem } from "@/lib/stream"
 import { keepScreenAwake } from "@/lib/wake-lock"
 import { cn } from "@/lib/utils"
 
 type StreamScreenProps = {
-  deck: Phrase[]
+  items: StreamItem[]
   support: SpeechSupport
   onQuit: () => void
 }
@@ -33,13 +33,16 @@ type Part = "en" | "ja"
 
 /** 英語のあと、訳に移るまでの間（ミリ秒）。意味を思い出す時間 */
 const GAP_BEFORE_JA = 500
-/** 次のフレーズに移るまでの間（ミリ秒） */
-const GAP_BEFORE_NEXT = 900
+/** 同じ会話の中で、次のセリフに移るまでの間 */
+const GAP_BETWEEN_LINES = 600
+/** 次の会話・フレーズに移るまでの間 */
+const GAP_BEFORE_NEXT = 1000
 /** ゆっくり再生の速さ。英語にだけ効かせる */
 const SLOW_RATE = 0.75
 
-export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
-  const [index, setIndex] = useState(0)
+export function StreamScreen({ items, support, onQuit }: StreamScreenProps) {
+  const [itemIndex, setItemIndex] = useState(0)
+  const [lineIndex, setLineIndex] = useState(0)
   const [part, setPart] = useState<Part>("en")
   const [playing, setPlaying] = useState(false)
 
@@ -49,17 +52,21 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
   // 端末に日本語の声が無いと、訳を読ませても意味のある音にならない
   const [noJapaneseVoice, setNoJapaneseVoice] = useState(false)
 
-  const current = deck[index]
-  const theme = SCENE_THEME[current.scene]
-  const scene = getScene(current.scene)
+  const activeLineRef = useRef<HTMLLIElement>(null)
 
-  // 読み上げ本体。再生中は、1つ終わるたびに次へ進む
+  const current = items[itemIndex]
+  const theme = SCENE_THEME[current.scene]
+
+  // 読み上げ本体。1つ終わるたびに、次のセリフ・次の会話へ進む
   useEffect(() => {
     if (!playing) return
 
-    const phrase = deck[index]
-    // 日本語訳を途中でオフにしたあと再開しても、訳を読み上げないようにする
+    const item = items[itemIndex]
+    const line = item.lines[lineIndex]
+    // 日本語訳を途中でオフにしたあと再開しても、訳を読み上げない
     const speakingJa = withJapanese && part === "ja"
+    const isLastLine = lineIndex === item.lines.length - 1
+
     let cancelled = false
     let timer: ReturnType<typeof setTimeout> | undefined
 
@@ -69,28 +76,34 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
         return
       }
       setPart("en")
-      if (index < deck.length - 1) {
-        setIndex(index + 1)
+      if (!isLastLine) {
+        setLineIndex(lineIndex + 1)
+        return
+      }
+      setLineIndex(0)
+      if (itemIndex < items.length - 1) {
+        setItemIndex(itemIndex + 1)
         return
       }
       // 最後まで来た
-      if (repeat) {
-        setIndex(0)
-      } else {
-        setPlaying(false)
-        setIndex(0)
-      }
+      setItemIndex(0)
+      if (!repeat) setPlaying(false)
     }
 
-    speak(speakingJa ? phrase.ja : phrase.en, {
+    speak(speakingJa ? line.ja : line.en, {
       lang: speakingJa ? "ja" : "en",
       rate: speakingJa || !slow ? 1 : SLOW_RATE,
+      // 英語は話し手ごとに声を変える。訳は1人のナレーションとして読む
+      voiceIndex: speakingJa ? 0 : line.speaker === "other" ? 1 : 0,
       onEnd: () => {
         if (cancelled) return
-        timer = setTimeout(
-          advance,
-          !speakingJa && withJapanese ? GAP_BEFORE_JA : GAP_BEFORE_NEXT
-        )
+        const gap =
+          !speakingJa && withJapanese
+            ? GAP_BEFORE_JA
+            : isLastLine
+              ? GAP_BEFORE_NEXT
+              : GAP_BETWEEN_LINES
+        timer = setTimeout(advance, gap)
       },
     })
 
@@ -99,7 +112,13 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
       if (timer) clearTimeout(timer)
       stopSpeaking()
     }
-  }, [playing, index, part, withJapanese, slow, repeat, deck])
+  }, [playing, itemIndex, lineIndex, part, withJapanese, slow, repeat, items])
+
+  // 読んでいるセリフが画面の外に出ないように追いかける
+  useEffect(() => {
+    if (!playing) return
+    activeLineRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" })
+  }, [playing, itemIndex, lineIndex])
 
   // 聞き流している間は画面を消さない。取れない環境では何も起きない
   useEffect(() => {
@@ -133,7 +152,8 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
   }
 
   function jumpTo(next: number) {
-    setIndex((next + deck.length) % deck.length)
+    setItemIndex((next + items.length) % items.length)
+    setLineIndex(0)
     setPart("en")
   }
 
@@ -166,7 +186,7 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
       <header className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
           <span className="text-muted-foreground text-sm font-medium tabular-nums">
-            {index + 1} / {deck.length} フレーズ
+            {itemIndex + 1} / {items.length}
           </span>
           <Button
             variant="ghost"
@@ -181,54 +201,71 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
           </Button>
         </div>
         <Progress
-          value={((index + 1) / deck.length) * 100}
+          value={((itemIndex + 1) / items.length) * 100}
           className="bg-muted h-2.5"
           indicatorClassName={cn("transition-all duration-300", theme.fill)}
         />
       </header>
 
-      <Card className="rounded-3xl border-2 py-7 shadow-lg">
-        <CardContent className="flex flex-col items-center gap-5 text-center">
-          <span
-            className={cn(
-              "rounded-full border-2 px-3 py-1 text-xs font-bold",
-              theme.chip
-            )}
-          >
-            {scene.label}
-          </span>
-
-          <div
-            className={cn(
-              "flex flex-col gap-1.5 rounded-2xl px-3 py-2 transition-colors",
-              playing && part === "en" && "bg-muted/70"
-            )}
-          >
+      <Card className="rounded-3xl border-2 py-6 shadow-lg">
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-col items-center gap-1 text-center">
             <span
               className={cn(
-                "text-[clamp(1.4rem,6.5vw,2rem)] leading-snug font-bold text-balance",
-                theme.text
+                "rounded-full border-2 px-3 py-1 text-xs font-bold",
+                theme.chip
               )}
             >
-              {current.en}
+              {current.title}
             </span>
-            <span className="text-muted-foreground text-sm">
-              {current.kana}
+            <span className="text-muted-foreground text-xs leading-relaxed text-pretty">
+              {current.note}
             </span>
           </div>
 
-          <span className="bg-border h-px w-20" />
-
-          <div
-            className={cn(
-              "rounded-2xl px-3 py-2 transition-colors",
-              playing && part === "ja" && "bg-muted/70"
-            )}
-          >
-            <span className="text-base font-medium text-pretty">
-              {current.ja}
-            </span>
-          </div>
+          <ul className="flex flex-col gap-2.5">
+            {current.lines.map((line, i) => {
+              const active = i === lineIndex
+              const mine = line.speaker === "you"
+              return (
+                <li
+                  key={`${current.id}-${i}`}
+                  ref={active ? activeLineRef : null}
+                  className={cn(
+                    "flex max-w-[88%] flex-col gap-0.5 rounded-2xl px-3.5 py-2.5 transition-all",
+                    mine
+                      ? "self-end rounded-br-md bg-sky-50 text-right dark:bg-sky-950/50"
+                      : "self-start rounded-bl-md bg-slate-100 dark:bg-slate-800/70",
+                    active ? cn("ring-2", theme.ring) : playing && "opacity-55"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "text-base leading-snug font-bold text-pretty",
+                      active && part === "en" && theme.text
+                    )}
+                  >
+                    {line.en}
+                  </span>
+                  {line.kana && (
+                    <span className="text-muted-foreground text-[0.7rem]">
+                      {line.kana}
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      "text-xs leading-relaxed text-pretty",
+                      active && part === "ja"
+                        ? cn("font-bold", theme.text)
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {line.ja}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
         </CardContent>
       </Card>
 
@@ -236,8 +273,8 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
         <Button
           variant="outline"
           size="icon"
-          aria-label="前のフレーズ"
-          onClick={() => jumpTo(index - 1)}
+          aria-label="前へ"
+          onClick={() => jumpTo(itemIndex - 1)}
           className="size-14 rounded-2xl border-2"
         >
           <SkipBack className="size-6" />
@@ -264,8 +301,8 @@ export function StreamScreen({ deck, support, onQuit }: StreamScreenProps) {
         <Button
           variant="outline"
           size="icon"
-          aria-label="次のフレーズ"
-          onClick={() => jumpTo(index + 1)}
+          aria-label="次へ"
+          onClick={() => jumpTo(itemIndex + 1)}
           className="size-14 rounded-2xl border-2"
         >
           <SkipForward className="size-6" />

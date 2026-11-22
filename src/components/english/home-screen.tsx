@@ -1,6 +1,15 @@
 "use client"
 
-import { Ear, Headphones, Mic, Play, Shuffle, Sparkles } from "lucide-react"
+import {
+  Ear,
+  Headphones,
+  MessagesSquare,
+  Mic,
+  Play,
+  Quote,
+  Shuffle,
+  Sparkles,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,6 +19,7 @@ import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Mode } from "@/lib/english-study"
 import { GROUPS, SCENES, sceneCount, type SceneId } from "@/lib/phrases"
+import { streamSize, type StreamSource } from "@/lib/stream"
 import { SCENE_THEME } from "@/lib/scene-theme"
 import type { SpeechSupport } from "@/lib/speech"
 import { cn } from "@/lib/utils"
@@ -17,6 +27,8 @@ import { cn } from "@/lib/utils"
 type HomeScreenProps = {
   mode: Mode
   onModeChange: (mode: Mode) => void
+  streamSource: StreamSource
+  onStreamSourceChange: (source: StreamSource) => void
   selectedScenes: SceneId[]
   onSelectedScenesChange: (scenes: SceneId[]) => void
   shuffle: boolean
@@ -28,6 +40,8 @@ type HomeScreenProps = {
 export function HomeScreen({
   mode,
   onModeChange,
+  streamSource,
+  onStreamSourceChange,
   selectedScenes,
   onSelectedScenesChange,
   shuffle,
@@ -36,8 +50,18 @@ export function HomeScreen({
   onStart,
 }: HomeScreenProps) {
   const selected = new Set(selectedScenes)
-  const total = selectedScenes.reduce((sum, id) => sum + sceneCount(id), 0)
   const allSelected = selectedScenes.length === SCENES.length
+
+  // 聞き流しは「会話」を選べるので、数え方が変わる
+  const stream = streamSize({ source: streamSource, scenes: selectedScenes })
+  const phrases = selectedScenes.reduce((sum, id) => sum + sceneCount(id), 0)
+  const total = mode === "stream" ? stream.items : phrases
+  const totalLabel =
+    mode === "stream" && streamSource === "dialogue"
+      ? `ぜんぶで ${stream.items} つの会話（${stream.lines} セリフ）`
+      : mode === "stream"
+        ? `ぜんぶで ${stream.items} フレーズ（返事こみ ${stream.lines} セリフ）`
+        : `ぜんぶで ${phrases} フレーズ`
 
   function toggleScene(sceneId: SceneId) {
     onSelectedScenesChange(
@@ -107,6 +131,42 @@ export function HomeScreen({
                     : "このブラウザは音声の聞き取りに対応していないため、「声に出す」は選べません（Chrome や Edge で使えます）。"}
             </p>
           </section>
+
+          {mode === "stream" && (
+            <section className="flex flex-col gap-2">
+              <Label className="text-muted-foreground text-xs tracking-widest">
+                ながす もの
+              </Label>
+              <Tabs
+                value={streamSource}
+                onValueChange={(value) =>
+                  onStreamSourceChange(value as StreamSource)
+                }
+              >
+                <TabsList className="h-11 w-full rounded-xl p-1">
+                  <TabsTrigger
+                    value="dialogue"
+                    className="gap-1 rounded-lg text-xs sm:text-sm"
+                  >
+                    <MessagesSquare className="hidden size-4 sm:block" />
+                    会話
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="phrase"
+                    className="gap-1 rounded-lg text-xs sm:text-sm"
+                  >
+                    <Quote className="hidden size-4 sm:block" />
+                    フレーズ
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <p className="text-muted-foreground text-xs leading-relaxed">
+                {streamSource === "dialogue"
+                  ? "場面ごとの、ひとまとまりのやりとりを通しで流します。"
+                  : "ひとことずつ、相手の返事とセットで流します。"}
+              </p>
+            </section>
+          )}
 
           <section className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-3">
@@ -190,10 +250,8 @@ export function HomeScreen({
           <Play className="size-5" />
           スタート
         </Button>
-        <p className="text-muted-foreground text-sm">
-          {total === 0
-            ? "ばめんをひとつ以上えらんでください"
-            : `ぜんぶで ${total} フレーズ`}
+        <p className="text-muted-foreground text-center text-sm text-balance">
+          {total === 0 ? "ばめんをひとつ以上えらんでください" : totalLabel}
         </p>
       </div>
     </div>

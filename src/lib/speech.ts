@@ -90,14 +90,16 @@ export type SpeakLang = "en" | "ja"
 
 const LANG_TAG: Record<SpeakLang, string> = { en: "en-US", ja: "ja-JP" }
 
-function voiceFor(lang: SpeakLang): SpeechSynthesisVoice | null {
+function voicesFor(lang: SpeakLang): SpeechSynthesisVoice[] {
   const tag = LANG_TAG[lang]
-  const voices = window.speechSynthesis.getVoices()
-  return (
-    voices.find((voice) => voice.lang.replace("_", "-") === tag) ??
-    voices.find((voice) => voice.lang.toLowerCase().startsWith(lang)) ??
-    null
-  )
+  const all = window.speechSynthesis.getVoices()
+  const exact = all.filter((voice) => voice.lang.replace("_", "-") === tag)
+  if (exact.length > 0) return exact
+  return all.filter((voice) => voice.lang.toLowerCase().startsWith(lang))
+}
+
+function voiceFor(lang: SpeakLang): SpeechSynthesisVoice | null {
+  return voicesFor(lang)[0] ?? null
 }
 
 /**
@@ -116,6 +118,11 @@ export type SpeakOptions = {
   lang?: SpeakLang
   /** 1 が標準の速さ。ゆっくり再生は 0.6 くらい */
   rate?: number
+  /**
+   * 会話の話し手。2人目は別の声で読む。
+   * 声が1つしか無い端末では、声の高さを変えて区別する。
+   */
+  voiceIndex?: 0 | 1
   onEnd?: () => void
 }
 
@@ -129,8 +136,13 @@ export function speak(text: string, options: SpeakOptions = {}): void {
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = LANG_TAG[lang]
   utterance.rate = options.rate ?? 1
-  const voice = voiceFor(lang)
+
+  const voices = voicesFor(lang)
+  const wanted = options.voiceIndex ?? 0
+  const voice = voices[Math.min(wanted, voices.length - 1)] ?? null
   if (voice) utterance.voice = voice
+  // 2人分の声を用意できない端末では、高さを下げて別人だと分かるようにする
+  if (wanted === 1 && voices.length < 2) utterance.pitch = 0.75
   if (options.onEnd) {
     utterance.onend = options.onEnd
     utterance.onerror = options.onEnd

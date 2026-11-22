@@ -9,6 +9,11 @@ import { StreamScreen } from "@/components/english/stream-screen"
 import { ResultScreen } from "@/components/english/result-screen"
 import { buildDeck, type Answer, type Mode } from "@/lib/english-study"
 import { SCENES, type Phrase, type SceneId } from "@/lib/phrases"
+import {
+  buildStream,
+  type StreamItem,
+  type StreamSource,
+} from "@/lib/stream"
 import { registerServiceWorker } from "@/lib/pwa"
 import { shuffled } from "@/lib/shuffle"
 import { getServerSupport, getSupport, subscribeSupport } from "@/lib/speech"
@@ -22,10 +27,12 @@ export function EnglishApp() {
     "greeting",
     "self",
   ])
+  const [streamSource, setStreamSource] = useState<StreamSource>("dialogue")
   const [shuffle, setShuffle] = useState(true)
 
   const [screen, setScreen] = useState<Screen>("home")
   const [deck, setDeck] = useState<Phrase[]>([])
+  const [streamItems, setStreamItems] = useState<StreamItem[]>([])
   const [answers, setAnswers] = useState<Record<string, Answer>>({})
   // 同じ設定でやり直すたびにカードの状態をリセットするための key
   const [round, setRound] = useState(0)
@@ -59,8 +66,20 @@ export function EnglishApp() {
     setDeck(phrases)
     setAnswers({})
     setRound((value) => value + 1)
+    setScreen("practice")
+  }
+
+  function start() {
     // 聞き流しは採点しないので、結果画面を持たない別の画面に進む
-    setScreen(mode === "stream" ? "stream" : "practice")
+    if (mode === "stream") {
+      setStreamItems(
+        buildStream({ source: streamSource, scenes: selectedScenes, shuffle })
+      )
+      setRound((value) => value + 1)
+      setScreen("stream")
+      return
+    }
+    startNewDeck(buildDeck({ scenes: selectedScenes, shuffle }))
   }
 
   return (
@@ -69,6 +88,8 @@ export function EnglishApp() {
         <HomeScreen
           mode={mode}
           onModeChange={setMode}
+          streamSource={streamSource}
+          onStreamSourceChange={setStreamSource}
           selectedScenes={selectedScenes}
           onSelectedScenesChange={(scenes) =>
             // ホームの並び順を保ったまま持ち、出題順と設定順を切り離す
@@ -81,9 +102,7 @@ export function EnglishApp() {
           shuffle={shuffle}
           onShuffleChange={setShuffle}
           support={support}
-          onStart={() =>
-            startNewDeck(buildDeck({ scenes: selectedScenes, shuffle }))
-          }
+          onStart={start}
         />
       )}
 
@@ -102,7 +121,7 @@ export function EnglishApp() {
       {screen === "stream" && (
         <StreamScreen
           key={round}
-          deck={deck}
+          items={streamItems}
           support={support}
           onQuit={() => setScreen("home")}
         />
