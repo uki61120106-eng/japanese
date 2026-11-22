@@ -85,31 +85,51 @@ export function subscribeSupport(): () => void {
   return () => {}
 }
 
-function englishVoice(): SpeechSynthesisVoice | null {
+/** 読み上げに使う言語。英語のお手本と、日本語の訳。 */
+export type SpeakLang = "en" | "ja"
+
+const LANG_TAG: Record<SpeakLang, string> = { en: "en-US", ja: "ja-JP" }
+
+function voiceFor(lang: SpeakLang): SpeechSynthesisVoice | null {
+  const tag = LANG_TAG[lang]
   const voices = window.speechSynthesis.getVoices()
   return (
-    voices.find((voice) => voice.lang.replace("_", "-") === "en-US") ??
-    voices.find((voice) => voice.lang.toLowerCase().startsWith("en")) ??
+    voices.find((voice) => voice.lang.replace("_", "-") === tag) ??
+    voices.find((voice) => voice.lang.toLowerCase().startsWith(lang)) ??
     null
   )
 }
 
+/**
+ * その言語の声が端末にあるか。
+ * 声の一覧は遅れて読み込まれるので、読み込みが済んでいる再生開始時に調べること。
+ */
+export function hasVoice(lang: SpeakLang): boolean {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+    return false
+  }
+  return voiceFor(lang) !== null
+}
+
 export type SpeakOptions = {
+  /** 既定は英語 */
+  lang?: SpeakLang
   /** 1 が標準の速さ。ゆっくり再生は 0.6 くらい */
   rate?: number
   onEnd?: () => void
 }
 
-/** 英語を読み上げる。前の読み上げは打ち切る。 */
+/** 読み上げる。前の読み上げは打ち切る。 */
 export function speak(text: string, options: SpeakOptions = {}): void {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return
 
   window.speechSynthesis.cancel()
 
+  const lang = options.lang ?? "en"
   const utterance = new SpeechSynthesisUtterance(text)
-  utterance.lang = "en-US"
+  utterance.lang = LANG_TAG[lang]
   utterance.rate = options.rate ?? 1
-  const voice = englishVoice()
+  const voice = voiceFor(lang)
   if (voice) utterance.voice = voice
   if (options.onEnd) {
     utterance.onend = options.onEnd

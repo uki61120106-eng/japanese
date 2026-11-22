@@ -1,6 +1,6 @@
 "use client"
 
-import { Ear, Mic, Play, Shuffle, Sparkles } from "lucide-react"
+import { Ear, Headphones, Mic, Play, Shuffle, Sparkles } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -73,26 +73,38 @@ export function HomeScreen({
               onValueChange={(value) => onModeChange(value as Mode)}
             >
               <TabsList className="h-11 w-full rounded-xl p-1">
-                <TabsTrigger value="listen" className="gap-1.5 rounded-lg">
-                  <Ear className="size-4" />
+                <TabsTrigger
+                  value="stream"
+                  className="gap-1 rounded-lg text-xs sm:text-sm"
+                >
+                  <Headphones className="hidden size-4 sm:block" />
+                  聞き流す
+                </TabsTrigger>
+                <TabsTrigger
+                  value="listen"
+                  className="gap-1 rounded-lg text-xs sm:text-sm"
+                >
+                  <Ear className="hidden size-4 sm:block" />
                   聞いて覚える
                 </TabsTrigger>
                 <TabsTrigger
                   value="speak"
                   disabled={!support.listen}
-                  className="gap-1.5 rounded-lg"
+                  className="gap-1 rounded-lg text-xs sm:text-sm"
                 >
-                  <Mic className="size-4" />
+                  <Mic className="hidden size-4 sm:block" />
                   声に出す
                 </TabsTrigger>
               </TabsList>
             </Tabs>
             <p className="text-muted-foreground text-xs leading-relaxed">
-              {mode === "speak"
-                ? "マイクで発音をチェックします。ブラウザにマイクの使用を許可してください。"
-                : support.listen
-                  ? "英語を読み上げて聞くモードです。発音チェックを使うなら「声に出す」を選んでください。"
-                  : "このブラウザは音声の聞き取りに対応していないため、「声に出す」は選べません（Chrome や Edge で使えます）。"}
+              {mode === "stream"
+                ? "英語と日本語訳を続けて読み上げます。操作せずに流し続けられます。"
+                : mode === "speak"
+                  ? "マイクで発音をチェックします。ブラウザにマイクの使用を許可してください。"
+                  : support.listen
+                    ? "カードをめくりながら、自分のペースで覚えるモードです。"
+                    : "このブラウザは音声の聞き取りに対応していないため、「声に出す」は選べません（Chrome や Edge で使えます）。"}
             </p>
           </section>
 

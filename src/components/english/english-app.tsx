@@ -4,13 +4,14 @@ import { useState, useSyncExternalStore } from "react"
 
 import { HomeScreen } from "@/components/english/home-screen"
 import { PracticeScreen } from "@/components/english/practice-screen"
+import { StreamScreen } from "@/components/english/stream-screen"
 import { ResultScreen } from "@/components/english/result-screen"
 import { buildDeck, type Answer, type Mode } from "@/lib/english-study"
 import { SCENES, type Phrase, type SceneId } from "@/lib/phrases"
 import { shuffled } from "@/lib/shuffle"
 import { getServerSupport, getSupport, subscribeSupport } from "@/lib/speech"
 
-type Screen = "home" | "practice" | "result"
+type Screen = "home" | "practice" | "stream" | "result"
 
 export function EnglishApp() {
   // ホームの設定。結果画面から戻っても保たれるようにここで持つ。
@@ -48,7 +49,8 @@ export function EnglishApp() {
     setDeck(phrases)
     setAnswers({})
     setRound((value) => value + 1)
-    setScreen("practice")
+    // 聞き流しは採点しないので、結果画面を持たない別の画面に進む
+    setScreen(mode === "stream" ? "stream" : "practice")
   }
 
   return (
@@ -72,6 +74,15 @@ export function EnglishApp() {
           onStart={() =>
             startNewDeck(buildDeck({ scenes: selectedScenes, shuffle }))
           }
+        />
+      )}
+
+      {screen === "stream" && (
+        <StreamScreen
+          key={round}
+          deck={deck}
+          support={support}
+          onQuit={() => setScreen("home")}
         />
       )}
 
