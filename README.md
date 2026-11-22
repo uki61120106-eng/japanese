@@ -1,11 +1,13 @@
 # 学習デモアプリ
 
-ブラウザだけで動く学習デモアプリを2つ収録しています。トップページから選びます。
+ブラウザだけで動くデモアプリを収録しています。トップページから選びます。
 
 | アプリ | パス | 内容 |
 | --- | --- | --- |
 | かなフラッシュ | `/kana` | ひらがな・カタカナ92字をフラッシュカードで覚える |
-| えいかいわフラッシュ | `/english` | 初心者向けの英会話フレーズ56個を聞いて・声に出して覚える |
+| えいかいわフラッシュ | `/english` | 初心者向けの英会話フレーズ56個を聞き流し・カード・発音チェックで覚える |
+| おうち筋トレ20 | `/workout` | 道具なし・毎日20分の自宅トレーニング |
+| RM 計算機 | `/rm` | 最大挙上重量（1RM）の推定 |
 
 ## かなフラッシュ
 
@@ -50,6 +52,55 @@
    言い切れません。読み上げるのは同梱の定型フレーズのみで、個人情報を話させる設計には
    していません。
 
+## おうち筋トレ20（`/workout`）
+
+同じアプリの中に、道具を使わない自宅トレーニングのアプリも入っています。
+
+- 毎日20分（ウォームアップ3分 + メイン14分 + ストレッチ3分）、曜日ごとにメニューが変わる
+- 初級 / 中級 / 上級、ジャンプしない静音モード、音声ガイド付きのタイマー
+- 体重を記録して「1年で −3kg」の目標ラインと比べられる
+- 全種目に動きのアニメーション図、食事の工夫のワンタップ記録
+- 毎日のリマインダー（スマホのカレンダーに登録 / アプリを開いている間の通知）
+- 記録は端末のブラウザに保存（通信なし）。「設定」タブからバックアップ・復元できる
+
+要件は [`docs/workout-requirements.md`](docs/workout-requirements.md)。
+
+### スマホで使う
+
+ホーム画面に追加できるウェブアプリ（PWA）になっています。一度開けば通信がなくても起動します。
+
+1. 下の「Vercel へのデプロイ」で公開する（スマホから開くには https の URL が必要）
+2. スマホのブラウザで `https://<公開先>/workout` を開く
+3. iPhone は Safari の共有ボタン →「ホーム画面に追加」、Android は表示される「ホーム画面に追加する」ボタン
+   （出ない場合はブラウザのメニュー →「ホーム画面に追加」）
+
+記録は端末のブラウザに保存されます。iPhone では Safari とホーム画面のアプリで保存場所が分かれるため、
+記録を始める前に追加してください。
+
+| ファイル | 役割 |
+| --- | --- |
+| `public/workout/manifest.webmanifest` | アプリ名・アイコン・起動 URL（`/workout`） |
+| `public/workout/icons/` | アイコン（`icon.svg` が元絵） |
+| `public/workout-sw.js` | オフライン用の Service Worker（`/workout` だけを受け持つ） |
+| `src/lib/pwa.ts` | Service Worker の登録と「ホーム画面に追加」の判定（RM 計算機と共通） |
+| `src/components/install-hint.tsx` | 「ホーム画面に追加」の案内カード（RM 計算機と共通） |
+1枚の HTML にする場合は `npm run build:workout`（`dist-demo/workout.html`）。
+
+## RM 計算機（`/rm`）
+
+挙げた重量と回数から、最大挙上重量（1RM）を推定するページです。
+
+- 7つの推定式（Epley / Brzycki / Lander / Lombardi / Mayhew / O'Conner / Wathan）と、その平均で計算
+- 1〜20RM の換算表（プレートの刻み 0.5 / 1.25 / 2.5 / 5 kg に丸め）
+- 筋力アップ・筋肥大・筋持久力ごとの重量の目安
+- 前回の入力だけ端末のブラウザに保存（通信なし）
+- スマホのホーム画面に追加できる（PWA）。一度開けば通信がなくても起動する
+
+スマホで使う手順は筋トレ版と同じで、開く URL が `https://<公開先>/rm` になります。
+ファイルは `public/rm/`（マニフェスト・アイコン）と `public/rm-sw.js`（Service Worker）。
+
+要件は [`docs/rm-requirements.md`](docs/rm-requirements.md)。1枚の HTML にする場合は `npm run build:rm`（`dist-demo/rm.html`）。
+
 ## 使い方
 
 ```bash
@@ -64,9 +115,11 @@ npm run dev     # http://localhost:3000
 リンクを渡して触ってもらいたいときは、アプリ全体を単一の HTML に束ねられます。
 
 ```bash
-npm run build:demo            # dist-demo/kana.html と dist-demo/english.html
+npm run build:demo            # すべてのアプリを dist-demo/ に出力
 npm run build:demo:english    # えいかいわフラッシュだけ
 npm run build:demo:kana       # かなフラッシュだけ
+npm run build:workout         # おうち筋トレ20 だけ
+npm run build:rm              # RM 計算機だけ
 ```
 
 表示に使う文字のフォントだけを埋め込むので、生成後はネット接続なしで動きます
@@ -101,9 +154,15 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/wake-lock.ts` | 聞き流し中に画面を消さないようにする |
 | `src/lib/pronunciation.ts` | 聞き取り結果とお手本の照合 |
 | `src/lib/row-theme.ts` / `src/lib/scene-theme.ts` | 行・場面ごとの配色 |
-| `src/lib/shuffle.ts` | 出題順のシャッフル（両アプリ共通） |
+| `src/lib/shuffle.ts` | 出題順のシャッフル（かな・えいかいわ共通） |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
-| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト |
+| `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト（アプリ名を渡すとそれだけを出力） |
+| `src/app/workout/` | おうち筋トレ20 のページ |
+| `src/components/workout/` | 今日 / トレーニング中 / 終了 / 記録 / 目標 の各画面 |
+| `src/lib/workout/` | 種目データ、20分の組み立て、カロリー推定、目標計算、保存 |
+| `src/app/rm/` | RM 計算機のページ |
+| `src/components/rm/rm-calculator.tsx` | 入力・推定 1RM・式の比較・換算表・目的別の目安 |
+| `src/lib/rm/` | 推定式と丸め、前回入力の保存 |
 
 ## 技術
 

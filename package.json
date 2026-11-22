@@ -9,7 +9,9 @@
     "lint": "eslint",
     "build:demo": "node scripts/build-demo.mjs",
     "build:demo:kana": "node scripts/build-demo.mjs kana",
-    "build:demo:english": "node scripts/build-demo.mjs english"
+    "build:demo:english": "node scripts/build-demo.mjs english",
+    "build:workout": "node scripts/build-demo.mjs workout",
+    "build:rm": "node scripts/build-demo.mjs rm"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.15",

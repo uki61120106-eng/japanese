@@ -18,14 +18,17 @@ import { inlineFontFaces } from "./inline-font.mjs"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 
+/** ルートレイアウトが body に当てていた背景。自前の背景を持たないアプリ用 */
+const DEFAULT_BACKGROUND =
+  "bg-linear-to-b from-rose-50 via-amber-50 to-sky-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
+
 /** 背景は body ではなく #root に当てる（レイアウトを持ち込まないため） */
 const APPS = {
   kana: {
     entry: "scripts/demo-entry-kana.tsx",
     title: "かなフラッシュ",
     out: "dist-demo/kana.html",
-    background:
-      "bg-linear-to-b from-rose-50 via-amber-50 to-sky-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950",
+    background: DEFAULT_BACKGROUND,
   },
   english: {
     entry: "scripts/demo-entry-english.tsx",
@@ -33,6 +36,18 @@ const APPS = {
     out: "dist-demo/english.html",
     background:
       "bg-linear-to-b from-sky-50 via-indigo-50 to-rose-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950",
+  },
+  workout: {
+    entry: "scripts/workout-entry.tsx",
+    title: "おうち筋トレ20",
+    out: "dist-demo/workout.html",
+    background: DEFAULT_BACKGROUND,
+  },
+  rm: {
+    entry: "scripts/rm-entry.tsx",
+    title: "RM 計算機",
+    out: "dist-demo/rm.html",
+    background: DEFAULT_BACKGROUND,
   },
 }
 
