@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 /** アプリごとの Service Worker（public/ 直下） */
-const SERVICE_WORKERS = ["/workout-sw.js", "/rm-sw.js"];
+const SERVICE_WORKERS = ["/workout-sw.js", "/rm-sw.js", "/english-sw.js"];
 
 const nextConfig: NextConfig = {
   async headers() {

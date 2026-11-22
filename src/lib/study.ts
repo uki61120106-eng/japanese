@@ -1,4 +1,5 @@
 import { getKana, type Kana, type RowId, type Script } from "@/lib/kana"
+import { shuffled } from "@/lib/shuffle"
 
 export type Answer = "known" | "unknown"
 
@@ -6,16 +7,6 @@ export type StudyConfig = {
   script: Script
   rows: RowId[]
   shuffle: boolean
-}
-
-/** Fisher-Yates。元の配列は変更しない。 */
-export function shuffled<T>(items: T[]): T[] {
-  const next = [...items]
-  for (let i = next.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[next[i], next[j]] = [next[j], next[i]]
-  }
-  return next
 }
 
 export function buildDeck(config: StudyConfig): Kana[] {
