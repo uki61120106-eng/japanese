@@ -8,7 +8,6 @@ import {
   MessagesSquare,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { HIRAGANA, KATAKANA } from "@/lib/kana"
 import { PHRASES } from "@/lib/phrases"
@@ -70,11 +69,8 @@ export default function Page() {
     <div className="min-h-dvh bg-linear-to-b from-indigo-50 via-rose-50 to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-10 sm:py-16">
         <header className="flex flex-col items-center gap-3 text-center">
-          <Badge className="bg-linear-to-r from-indigo-500 to-rose-500 px-3 py-1 text-[0.7rem] tracking-widest">
-            DEMO
-          </Badge>
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
-            学習デモアプリ
+            アプリをえらぶ
           </h1>
           <p className="text-muted-foreground text-sm text-balance">
             どれもブラウザだけで動きます。ログインはいりません

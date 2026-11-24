@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "学習デモアプリ",
+  title: "アプリをえらぶ",
   description:
-    "ブラウザだけで動く学習デモアプリ。かなフラッシュ（ひらがな・カタカナ）と えいかいわフラッシュ（初心者向けの英会話フレーズ）。",
+    "ブラウザだけで動くアプリ。かなフラッシュ、えいかいわフラッシュ、おうち筋トレ20、RM 計算機。",
 }
 
 export default function RootLayout({
