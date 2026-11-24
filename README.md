@@ -174,7 +174,7 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/dialogues.ts` | 場面ごとの会話データ（話し手・英語・日本語・カタカナ） |
 | `src/lib/stream.ts` | 聞き流し用に、フレーズと会話を同じ形へそろえる |
 | `src/lib/study.ts` / `src/lib/english-study.ts` | デッキの生成と集計 |
-| `src/lib/speech.ts` | 読み上げ（英語・日本語）と聞き取り（Web Speech API）のラッパー |
+| `src/lib/speech.ts` | 読み上げ（英語・日本語）と聞き取りのラッパー。聞き取りはアーティファクト内なら `dictation`、それ以外は Web Speech API |
 | `src/lib/wake-lock.ts` | 聞き流し中に画面を消さないようにする |
 | `src/lib/pronunciation.ts` | 聞き取り結果とお手本の照合 |
 | `src/lib/row-theme.ts` / `src/lib/scene-theme.ts` | 行・場面ごとの配色 |

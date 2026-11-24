@@ -1,12 +1,18 @@
 /**
- * ブラウザ内蔵の音声機能（Web Speech API）の薄いラッパー。
- * サーバーも API キーも使わないので、この2つが使えるかどうかが機能の上限になる。
+ * 音声機能の薄いラッパー。読み上げと聞き取りを、環境に応じて使い分ける。
  *
  * - 読み上げ: SpeechSynthesis（ほぼ全ブラウザで使える）
- * - 聞き取り: SpeechRecognition（Chrome / Edge / Safari など。Firefox は未対応）
+ * - 聞き取り: 置かれている場所によって2通り
+ *     - アーティファクト内: claude.use("dictation")。枠の中では
+ *       マイクを直接さわれないため、プラットフォーム側に聞き取ってもらう
+ *     - それ以外（Vercel・ローカル）: SpeechRecognition
  *
- * SpeechRecognition は TypeScript の標準型定義に無いため、使う範囲だけ宣言する。
+ * どちらも TypeScript の標準型定義に無いため、使う範囲だけ宣言する。
  */
+
+// ---------------------------------------------------------------------------
+// SpeechRecognition（ブラウザ内蔵）
+// ---------------------------------------------------------------------------
 
 type RecognitionAlternative = { transcript: string; confidence: number }
 
@@ -45,6 +51,60 @@ type SpeechWindow = Window & {
   webkitSpeechRecognition?: RecognitionConstructor
 }
 
+function recognitionConstructor(): RecognitionConstructor | null {
+  if (typeof window === "undefined") return null
+  const w = window as SpeechWindow
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null
+}
+
+// ---------------------------------------------------------------------------
+// dictation（アーティファクトのランタイム機能）
+// ---------------------------------------------------------------------------
+
+type DictationState = "idle" | "starting" | "listening" | "finishing"
+
+type Dictation = {
+  start(options?: { language?: string }): Promise<void>
+  stop(): Promise<void>
+  active(): boolean
+  onFinal(handler: (event: { text: string }) => void): () => void
+  onState(
+    handler: (event: { state: DictationState; reason?: string }) => void
+  ): () => void
+}
+
+type ClaudeWindow = Window & {
+  claude?: { use?: (name: string) => Promise<unknown> }
+}
+
+/**
+ * アーティファクトの枠の中にいるか。
+ * ここでは SpeechRecognition が存在していても必ず拒否されるため、
+ * dictation が無ければ「聞き取りは使えない」と扱う。
+ */
+function inArtifact(): boolean {
+  return typeof window !== "undefined" && "claude" in window
+}
+
+let dictation: Dictation | null = null
+let probeStarted = false
+
+async function probeDictation(): Promise<void> {
+  const claude = (window as ClaudeWindow).claude
+  if (typeof claude?.use !== "function") return
+  try {
+    // 使えない環境（Safari・Firefox・スマホのアプリなど）では null が返る
+    dictation = ((await claude.use("dictation")) as Dictation | null) ?? null
+  } catch {
+    dictation = null
+  }
+  refreshSupport()
+}
+
+// ---------------------------------------------------------------------------
+// 対応状況
+// ---------------------------------------------------------------------------
+
 export type SpeechSupport = {
   /** 英語を読み上げられるか */
   speak: boolean
@@ -54,24 +114,35 @@ export type SpeechSupport = {
 
 export const NO_SUPPORT: SpeechSupport = { speak: false, listen: false }
 
-function recognitionConstructor(): RecognitionConstructor | null {
-  if (typeof window === "undefined") return null
-  const w = window as SpeechWindow
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null
-}
-
+const supportListeners = new Set<() => void>()
 let supportSnapshot: SpeechSupport | null = null
 
+function computeSupport(): SpeechSupport {
+  return {
+    speak: "speechSynthesis" in window,
+    listen: dictation
+      ? true
+      : inArtifact()
+        ? false
+        : recognitionConstructor() !== null,
+  }
+}
+
+function refreshSupport(): void {
+  const next = computeSupport()
+  const prev = supportSnapshot
+  if (prev && prev.speak === next.speak && prev.listen === next.listen) return
+  supportSnapshot = next
+  supportListeners.forEach((listener) => listener())
+}
+
 /**
- * 対応状況を返す。読み込み後に変わることはないので一度だけ調べて覚えておく
- * （useSyncExternalStore に渡すため、同じ内容なら同じオブジェクトを返す必要がある）。
+ * 対応状況を返す。useSyncExternalStore に渡すため、
+ * 内容が変わらないかぎり同じオブジェクトを返す。
  */
 export function getSupport(): SpeechSupport {
   if (typeof window === "undefined") return NO_SUPPORT
-  supportSnapshot ??= {
-    speak: "speechSynthesis" in window,
-    listen: recognitionConstructor() !== null,
-  }
+  supportSnapshot ??= computeSupport()
   return supportSnapshot
 }
 
@@ -80,10 +151,24 @@ export function getServerSupport(): SpeechSupport {
   return NO_SUPPORT
 }
 
-/** 対応状況は変化しないため、購読しても通知は起きない。 */
-export function subscribeSupport(): () => void {
-  return () => {}
+/**
+ * dictation が使えるかは非同期にしか分からないため、
+ * 購読が始まった時点で調べ、分かったら通知する。
+ */
+export function subscribeSupport(onChange: () => void): () => void {
+  supportListeners.add(onChange)
+  if (!probeStarted) {
+    probeStarted = true
+    void probeDictation()
+  }
+  return () => {
+    supportListeners.delete(onChange)
+  }
 }
+
+// ---------------------------------------------------------------------------
+// 読み上げ
+// ---------------------------------------------------------------------------
 
 /** 読み上げに使う言語。英語のお手本と、日本語の訳。 */
 export type SpeakLang = "en" | "ja"
@@ -156,6 +241,10 @@ export function stopSpeaking(): void {
   window.speechSynthesis.cancel()
 }
 
+// ---------------------------------------------------------------------------
+// 聞き取り
+// ---------------------------------------------------------------------------
+
 export type ListenError =
   | "unsupported"
   /** マイクの利用が許可されなかった */
@@ -180,12 +269,77 @@ function toListenError(code: string): ListenError {
   return "other"
 }
 
+/** dictation の終了理由。エラーでなければ undefined を返す。 */
+function dictationError(reason?: string): ListenError | undefined {
+  switch (reason) {
+    case "not_granted":
+      return "denied"
+    case "unavailable":
+      return "unsupported"
+    case "dismissed":
+    case "rate_limited":
+    case "upstream_error":
+      return "other"
+    // stopped / viewer_stopped / hidden / time_limit は異常ではない
+    default:
+      return undefined
+  }
+}
+
+function listenWithDictation(
+  api: Dictation,
+  handlers: ListenHandlers
+): ListenHandle {
+  let heard = ""
+  let done = false
+  const unsubscribes: Array<() => void> = []
+
+  function finish(error?: ListenError) {
+    if (done) return
+    done = true
+    unsubscribes.forEach((off) => off())
+    unsubscribes.length = 0
+
+    const text = heard.trim()
+    if (!error && text) handlers.onResult(text)
+    else handlers.onError(error ?? "no-speech")
+    handlers.onEnd()
+  }
+
+  // 確定したぶんは、つなぎの空白ごとそのまま足していく
+  unsubscribes.push(api.onFinal((event) => (heard += event.text)))
+  unsubscribes.push(
+    api.onState((event) => {
+      if (event.state === "idle") finish(dictationError(event.reason))
+    })
+  )
+
+  // 読み上げ中だとマイクが自分の音声を拾うため、先に止める
+  stopSpeaking()
+
+  // start() は利用者の操作から同期的に呼ぶ必要がある（await を挟まない）
+  api.start({ language: "en" }).catch((error: { code?: string }) => {
+    finish(dictationError(error?.code) ?? "other")
+  })
+
+  return {
+    stop: () => {
+      void api.stop()
+    },
+  }
+}
+
 /**
  * マイクから英語を1回だけ聞き取る。
  * 対応していない場合は onError("unsupported") を呼んで null を返す。
+ *
+ * 利用者のクリックから同期的に呼ぶこと。
  */
 export function listen(handlers: ListenHandlers): ListenHandle | null {
-  const Recognition = recognitionConstructor()
+  if (dictation) return listenWithDictation(dictation, handlers)
+
+  // アーティファクトの枠の中では SpeechRecognition は必ず拒否される
+  const Recognition = inArtifact() ? null : recognitionConstructor()
   if (!Recognition) {
     handlers.onError("unsupported")
     handlers.onEnd()
