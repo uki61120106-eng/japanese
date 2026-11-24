@@ -1,8 +1,7 @@
 "use client"
 
-import { Play, Shuffle, Sparkles } from "lucide-react"
+import { Play, Shuffle } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -46,10 +45,6 @@ export function HomeScreen({
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col items-center gap-3 text-center">
-        <Badge className="gap-1.5 bg-linear-to-r from-fuchsia-500 to-rose-500 px-3 py-1 text-[0.7rem] tracking-widest">
-          <Sparkles className="size-3" />
-          DEMO
-        </Badge>
         <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
           かなフラッシュ
         </h1>
