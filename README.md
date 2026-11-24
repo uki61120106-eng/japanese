@@ -181,6 +181,7 @@ Production は `main`、それ以外のブランチへの push は自動でプ�
 | `src/lib/shuffle.ts` | 出題順のシャッフル（かな・えいかいわ共通） |
 | `src/components/ui/` | shadcn/ui のコンポーネント |
 | `scripts/build-demo.mjs` | 共有用に1枚の HTML へ束ねるスクリプト（アプリ名を渡すとそれだけを出力） |
+| `.claude/settings.json` | Claude Code の許可設定（`git push --force-with-lease` のみ事前承認） |
 | `src/app/workout/` | おうち筋トレ20 のページ |
 | `src/components/workout/` | 今日 / トレーニング中 / 終了 / 記録 / 目標 の各画面 |
 | `src/lib/workout/` | 種目データ、20分の組み立て、カロリー推定、目標計算、保存 |
